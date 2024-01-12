@@ -54,16 +54,6 @@ public class FilesPage extends JPanel {
 		titel.setBounds(219, 11, 120, 14);
 		add(titel);
 
-		JButton btnFileButton = new JButton("Datei");
-		btnFileButton.setFont(new Font(font, Font.PLAIN, 11));
-		btnFileButton.addActionListener(e -> {
-			try {
-				Desktop.getDesktop().open(new File("E:\\Videos\\Videos\\usasmoking.txt"));
-			} catch (IOException e1) {}
-		});
-		btnFileButton.setBounds(10, 9, 89, 23);
-		add(btnFileButton);
-
 		JButton btnResetButton = new JButton("Reset");
 		btnResetButton.setFont(new Font(font, Font.PLAIN, 11));
 		btnResetButton.setBounds(109, 9, 89, 23);
@@ -192,11 +182,9 @@ public class FilesPage extends JPanel {
 		scrollPane_VideoInfo.setVisible(true);
 		lblVideoTitel.setText(video.getName());
 		panel_VideoImage.removeAll();
-		for (ActionListener listener : btnPlay.getActionListeners())
-			btnPlay.removeActionListener(listener);
+		for (ActionListener listener : btnPlay.getActionListeners()) btnPlay.removeActionListener(listener);
 		btnPlay.addActionListener(e -> video.play());
-		for (ActionListener listener : btnFav.getActionListeners())
-			btnFav.removeActionListener(listener);
+		for (ActionListener listener : btnFav.getActionListeners()) btnFav.removeActionListener(listener);
 		btnFav.addActionListener(e -> {
 			if (video.isFavorite()) {
 				video.removeFromFavorites();

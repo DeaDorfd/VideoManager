@@ -27,8 +27,8 @@ public class Data {
 	public static ArrayList<File> folders = new ArrayList<>();
 	public static ArrayList<String> currentFolders = new ArrayList<>();
 
-	public static String path = "";
-	public static String oripath = "";
+	public static String path = "E:/Videos/";
+	public static String oripath = "E:/Videos/";
 
 	public static String downloadPath = "";
 

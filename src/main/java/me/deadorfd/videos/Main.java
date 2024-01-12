@@ -19,7 +19,6 @@ import me.deadorfd.videos.pages.NewFilesPage;
 import me.deadorfd.videos.pages.SearchPage;
 import me.deadorfd.videos.pages.SettingsPage;
 import me.deadorfd.videos.pages.VideoHistoryPage;
-import me.deadorfd.videos.pages.VideosPage;
 import me.deadorfd.videos.utils.FileManager;
 import me.deadorfd.videos.utils.sql.History;
 import me.deadorfd.videos.utils.sql.SQLite;
@@ -116,9 +115,6 @@ public class Main extends JFrame {
 
 		JPanel newFiles = new NewFilesPage();
 		contentPane.add(newFiles, "newfiles");
-
-		JPanel newVideosPage = new VideosPage();
-		contentPane.add(newVideosPage, "newVideos");
 
 		JPanel historyPage = new VideoHistoryPage();
 		contentPane.add(historyPage, "history");
