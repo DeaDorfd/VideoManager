@@ -20,8 +20,8 @@ public class SQLite {
 	public static void connect() {
 		if (isConnected()) return;
 		try {
-			conn = DriverManager.getConnection(
-					"jdbc:sqlite:" + System.getenv("APPDATA") + "/.videos/videos.db");
+			conn = DriverManager
+					.getConnection("jdbc:sqlite:" + System.getenv("APPDATA") + "/.videos/videos.db");
 			createTable();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -47,6 +47,9 @@ public class SQLite {
 					.executeUpdate();
 			conn.prepareStatement(
 					"CREATE TABLE IF NOT EXISTS History(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, VideoPath VARCHAR(100));")
+					.executeUpdate();
+			conn.prepareStatement(
+					"CREATE TABLE IF NOT EXISTS Settings(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Name LONGTEXT, Status LONGTEXT);")
 					.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();

@@ -1,7 +1,5 @@
 package me.deadorfd.videos.pages;
 
-import static me.deadorfd.videos.utils.Data.font;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -12,14 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-
-import com.sapher.youtubedl.YoutubeDL;
-import com.sapher.youtubedl.YoutubeDLException;
-import com.sapher.youtubedl.YoutubeDLRequest;
-import com.sapher.youtubedl.YoutubeDLResponse;
-
-import me.deadorfd.videos.Main;
-import me.deadorfd.videos.utils.Data;
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
@@ -97,8 +87,7 @@ public class DownloadPage extends JPanel {
 		add(lblCounts);
 
 		JButton btnMainButton = new JButton("Menü");
-		btnMainButton.addActionListener(e -> Main.switchScenes("main"));
-		btnMainButton.setFont(new Font(font, Font.PLAIN, 15));
+		btnMainButton.setFont(new Font("", Font.PLAIN, 15));
 		btnMainButton.setBounds(364, 354, 120, 23);
 		add(btnMainButton);
 	}
@@ -136,26 +125,26 @@ public class DownloadPage extends JPanel {
 	}
 
 	private void download(String url) {
-		new Thread(() -> {
-			YoutubeDLRequest request = new YoutubeDLRequest(url, Data.youtubeDLPPath);
-			request.setOption("paths", Data.downloadPath);
-			request.setOption("format", "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]");
-			request.setOption("output", "%(title)s.%(ext)s");
-			YoutubeDLResponse response = null;
-			try {
-				response = YoutubeDL.execute(request);
-			} catch (YoutubeDLException e2) {
-				e2.printStackTrace();
-			}
-
-			System.out.println(response.getOut());
-			if (response != null && response.getExitCode() == 0) {
-				System.out.println("Das Video wurde erfolgreich heruntergeladen!");
-			} else {
-				System.out.println("Beim Herunterladen des Videos ist ein Fehler aufgetreten.");
-			}
-			currentCount--;
-			updateProgressbar();
-		}).start();
+//		new Thread(() -> {
+//			YoutubeDLRequest request = new YoutubeDLRequest(url, Data.youtubeDLPPath);
+//			request.setOption("paths", Data.downloadPath);
+//			request.setOption("format", "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]");
+//			request.setOption("output", "%(title)s.%(ext)s");
+//			YoutubeDLResponse response = null;
+//			try {
+//				response = YoutubeDL.execute(request);
+//			} catch (YoutubeDLException e2) {
+//				e2.printStackTrace();
+//			}
+//
+//			System.out.println(response.getOut());
+//			if (response != null && response.getExitCode() == 0) {
+//				System.out.println("Das Video wurde erfolgreich heruntergeladen!");
+//			} else {
+//				System.out.println("Beim Herunterladen des Videos ist ein Fehler aufgetreten.");
+//			}
+//			currentCount--;
+//			updateProgressbar();
+//		}).start();
 	}
 }

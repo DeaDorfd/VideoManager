@@ -25,15 +25,14 @@ public class Favorites {
 	}
 
 	public void create() {
-		if (!exists())
-			SQLite.update("INSERT INTO Favorites(VideoPath) VALUES ('" + video.getPath() + "');");
+		if (!exists()) SQLite.update("INSERT INTO Favorites(VideoPath) VALUES ('" + video.getPath() + "');");
 	}
 
 	public Boolean exists() {
 		if (!SQLite.isConnected()) return false;
 		try {
-			ResultSet rs = SQLite.getResult(
-					"SELECT * FROM Favorites WHERE VideoPath= '" + video.getPath() + "'");
+			ResultSet rs = SQLite
+					.getResult("SELECT * FROM Favorites WHERE VideoPath= '" + video.getPath() + "'");
 			if (rs.next()) return rs.getString("VideoPath") != null;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -44,8 +43,8 @@ public class Favorites {
 	public Boolean remove() {
 		if (!SQLite.isConnected()) return false;
 		try {
-			PreparedStatement ps = SQLite.conn.prepareStatement(
-					"DELETE FROM Favorites WHERE VideoPath='" + video.getPath() + "'");
+			PreparedStatement ps = SQLite.conn
+					.prepareStatement("DELETE FROM Favorites WHERE VideoPath='" + video.getPath() + "'");
 			int i = ps.executeUpdate();
 			ps.close();
 			return i == 1;
@@ -57,17 +56,14 @@ public class Favorites {
 
 	public void setVideoPath(String path) {
 		if (!exists()) return;
-		SQLite.update("UPDATE VideoPath SET VideoPath= '" + path
-				+ "' WHERE VideoPath= '"
-				+ video.getPath()
-				+ "'");
+		SQLite.update(
+				"UPDATE Favorites SET VideoPath= '" + path + "' WHERE VideoPath= '" + video.getPath() + "'");
 	}
 
 	public static ArrayList<BaseVideo> getAllFavorites() {
 		ArrayList<BaseVideo> favorites = new ArrayList<>();
 		try {
-			PreparedStatement ps = SQLite.conn
-					.prepareStatement("SELECT * FROM Favorites ORDER BY ID DESC");
+			PreparedStatement ps = SQLite.conn.prepareStatement("SELECT * FROM Favorites ORDER BY ID DESC");
 			ResultSet rs = ps.executeQuery();
 			while (rs.next())
 				favorites.add(new NormalVideo(new File(rs.getString("VideoPath"))));

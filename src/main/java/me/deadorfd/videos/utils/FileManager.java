@@ -14,6 +14,8 @@ import static me.deadorfd.videos.utils.Data.*;
  */
 public class FileManager {
 	public static void init() {
+		videos.clear();
+		folders.clear();
 		for (File file : new File(path).listFiles()) {
 			if (Data.isVideoFile(file.getName())) {
 				videos.add(new NormalVideo(file));

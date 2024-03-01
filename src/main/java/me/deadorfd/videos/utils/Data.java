@@ -3,6 +3,7 @@ package me.deadorfd.videos.utils;
 import java.io.File;
 import java.util.ArrayList;
 
+import me.deadorfd.videos.utils.sql.Setting;
 import me.deadorfd.videos.utils.video.HistoryVideo;
 import me.deadorfd.videos.utils.video.NormalVideo;
 
@@ -15,8 +16,6 @@ import me.deadorfd.videos.utils.video.NormalVideo;
  */
 public class Data {
 
-	public static String font = "Segoe Print";
-
 	public static ArrayList<File> createdInLastThirtyDays = new ArrayList<>();
 
 	// Videos
@@ -27,8 +26,8 @@ public class Data {
 	public static ArrayList<File> folders = new ArrayList<>();
 	public static ArrayList<String> currentFolders = new ArrayList<>();
 
-	public static String path = "E:/Videos/";
-	public static String oripath = "E:/Videos/";
+	public static String path = new Setting(Settings.DEFAULT_PATH).getStatus();
+	public static String oripath = new Setting(Settings.DEFAULT_PATH).getStatus();
 
 	public static String downloadPath = "";
 

@@ -48,9 +48,8 @@ public abstract class BaseVideoInfo {
 			avutil.av_log_set_level(avutil.AV_LOG_QUIET);
 			FFmpegFrameGrabber g = new FFmpegFrameGrabber(video.getFile());
 			String name = video.getFile().getName();
-			File dump = new File(System.getProperty("java.io.tmpdir") + "/videos/"
-					+ video.getFile().getName()
-					+ ".png");
+			File dump = new File(
+					System.getProperty("java.io.tmpdir") + "/videos/" + video.getFile().getName() + ".png");
 			if (!dump.getParentFile().exists()) dump.getParentFile().mkdir();
 			if (!dump.exists()) try {
 				dump.createNewFile();
@@ -117,13 +116,11 @@ public abstract class BaseVideoInfo {
 	}
 
 	public String getDuration() {
-		long minutes = TimeUnit.SECONDS.toMinutes(duration)
-				- (TimeUnit.SECONDS.toHours(duration) * 60);
+		long minutes = TimeUnit.SECONDS.toMinutes(duration) - (TimeUnit.SECONDS.toHours(duration) * 60);
 		long hours = TimeUnit.SECONDS.toHours(duration);
-		long seconds = TimeUnit.SECONDS.toSeconds(duration)
-				- (TimeUnit.SECONDS.toMinutes(duration) * 60);
-		if (hours >= 1) return "Länge: " + getFormat(
-				hours) + ":" + getFormat(minutes) + ":" + getFormat(seconds) + "";
+		long seconds = TimeUnit.SECONDS.toSeconds(duration) - (TimeUnit.SECONDS.toMinutes(duration) * 60);
+		if (hours >= 1)
+			return "Länge: " + getFormat(hours) + ":" + getFormat(minutes) + ":" + getFormat(seconds) + "";
 		if (minutes >= 1) return "Länge: 00:" + getFormat(minutes) + ":" + getFormat(seconds) + "";
 		if (minutes == 0) return "Länge: 00:00:" + getFormat(seconds) + "";
 		return "Länge: 00:00:00";
@@ -142,7 +139,7 @@ public abstract class BaseVideoInfo {
 	}
 
 	public String getFrame() {
-		return img;
+		return img.replace('\\', '/');
 	}
 
 	public BaseVideo getVideo() {

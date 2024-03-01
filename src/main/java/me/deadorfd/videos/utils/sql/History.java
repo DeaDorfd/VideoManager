@@ -100,11 +100,24 @@ public class History {
 		return false;
 	}
 
+	public Boolean removeAll() {
+		if (!SQLite.isConnected()) return false;
+		try {
+			PreparedStatement ps = SQLite.conn
+					.prepareStatement("DELETE FROM History WHERE VideoPath='" + getPath() + "'");
+			int i = ps.executeUpdate();
+			ps.close();
+			return i == 1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 	public static ArrayList<UUID> getAllHistory() {
 		ArrayList<UUID> history = new ArrayList<>();
 		try {
-			PreparedStatement ps = SQLite.conn
-					.prepareStatement("SELECT * FROM History ORDER BY ID DESC");
+			PreparedStatement ps = SQLite.conn.prepareStatement("SELECT * FROM History ORDER BY ID DESC");
 			ResultSet rs = ps.executeQuery();
 			while (rs.next())
 				history.add(UUID.fromString(rs.getString("UUID")));

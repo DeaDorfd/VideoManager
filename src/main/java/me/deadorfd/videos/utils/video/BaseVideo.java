@@ -144,8 +144,7 @@ public abstract class BaseVideo {
 			e.printStackTrace();
 		}
 		Instant end = Instant.now();
-		System.out.println(
-				"Decoding hat: " + Duration.between(start, end).toSeconds() + "s gebraucht.");
+		System.out.println("Decoding hat: " + Duration.between(start, end).toSeconds() + "s gebraucht.");
 		videoBytes = null;
 		start = null;
 		end = null;
