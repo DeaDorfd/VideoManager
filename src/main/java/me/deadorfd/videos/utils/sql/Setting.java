@@ -37,7 +37,11 @@ public class Setting {
 	}
 
 	public String getStatus() {
-		if (!exists()) return "";
+		if (!exists()) {
+			if (setting == Settings.HISTORY_CLEAR_DAYS) return "90";
+			if (setting == Settings.MEDIAPLAYER_VOLUME) return "1.0";
+			return "";
+		}
 		ResultSet rs = SQLite.getResult("Select Status FROM Settings WHERE Name='" + setting.getName() + "'");
 		try {
 			while (rs.next())

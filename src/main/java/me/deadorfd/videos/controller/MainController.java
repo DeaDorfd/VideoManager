@@ -14,22 +14,10 @@ import me.deadorfd.videos.App;
  */
 public class MainController {
 	@FXML
-	private JFXButton buttonVideos;
+	private JFXButton buttonVideos, buttonSettings, buttonHistory;
 
 	@FXML
-	private JFXButton buttonSettings;
-
-	@FXML
-	private JFXButton buttonHistory;
-
-	@FXML
-	private JFXButton buttonFavorites;
-
-	@FXML
-	private JFXButton buttonSearch;
-
-	@FXML
-	private JFXButton buttonNewVideos;
+	private JFXButton buttonFavorites, buttonSearch, buttonNewVideos;
 
 	@FXML
 	private void initialize() {

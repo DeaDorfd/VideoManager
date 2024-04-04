@@ -31,13 +31,7 @@ import me.deadorfd.videos.utils.video.info.NormalVideoInfo;
  */
 public class NewVideosController {
 	@FXML
-	private JFXButton buttonMain;
-
-	@FXML
-	private JFXButton buttonOpenFolder;
-
-	@FXML
-	private JFXButton buttonBack;
+	private JFXButton buttonMain, buttonOpenFolder, buttonBack;
 
 	@FXML
 	private ScrollPane videosPane;
@@ -46,10 +40,7 @@ public class NewVideosController {
 	private VBox vboxVideos;
 
 	@FXML
-	private JFXCheckBox checkboxTenDays;
-
-	@FXML
-	private JFXCheckBox checkboxThirtyDays;
+	private JFXCheckBox checkboxTenDays, checkboxThirtyDays;
 
 	@FXML
 	private void initialize() {
@@ -109,10 +100,7 @@ public class NewVideosController {
 	private JFXTextArea videoInfos;
 
 	@FXML
-	private JFXButton videoInfoPlay;
-
-	@FXML
-	private JFXButton videoInfoFav;
+	private JFXButton videoInfoPlay, videoInfoFav;
 
 	private void openVideoInfo(NormalVideo video) {
 		if (video.isFavorite())

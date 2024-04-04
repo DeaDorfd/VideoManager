@@ -38,5 +38,20 @@
             <Font name="Candara" size="20.0" />
          </font>
       </JFXButton>
+      <Label layoutX="332.0" layoutY="301.0" prefHeight="28.0" prefWidth="248.0" text="Verlauf löschung in (Tage):" textFill="WHITE">
+         <font>
+            <Font name="Candara" size="20.0" />
+         </font>
+      </Label>
+      <JFXTextField fx:id="textfieldHistoryClearDays" layoutX="580.0" layoutY="301.0" prefHeight="28.0" prefWidth="248.0" style="-fx-background-color: #4d5a69; -fx-text-fill: #ffff;">
+         <font>
+            <Font name="Candara" size="15.0" />
+         </font>
+      </JFXTextField>
+      <JFXToggleButton fx:id="toggleHistoryClear" layoutX="877.0" layoutY="285.0" prefHeight="52.0" prefWidth="125.0" style="-fx-background-color: #4d5a69;" text="AUS" textFill="WHITE">
+         <font>
+            <Font name="Candara" size="15.0" />
+         </font>
+      </JFXToggleButton>
    </children>
 </AnchorPane>

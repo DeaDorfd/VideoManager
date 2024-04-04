@@ -1,13 +1,10 @@
 package me.deadorfd.videos.controller;
 
-import static me.deadorfd.videos.utils.Data.*;
-
 import java.io.File;
-import java.util.UUID;
-
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -17,9 +14,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import me.deadorfd.videos.App;
-import me.deadorfd.videos.utils.Data;
 import me.deadorfd.videos.utils.sql.History;
 import me.deadorfd.videos.utils.video.HistoryVideo;
 import me.deadorfd.videos.utils.video.info.NormalVideoInfo;
@@ -33,13 +30,7 @@ import me.deadorfd.videos.utils.video.info.NormalVideoInfo;
  */
 public class HistoryController {
 	@FXML
-	private JFXButton buttonMain;
-
-	@FXML
-	private JFXButton buttonOpenFolder;
-
-	@FXML
-	private JFXButton buttonBack;
+	private JFXButton buttonMain, buttonBack, buttonOpenFolder;
 
 	@FXML
 	private ScrollPane videosPane;
@@ -54,13 +45,27 @@ public class HistoryController {
 
 	@FXML
 	private void initialize() {
-		Data.history.clear();
-		for (UUID uuid : History.getAllHistory()) Data.history.add(new HistoryVideo(uuid));
 		videoInfoPane.setVisible(false);
 		videosPane.setFitToHeight(true);
 		videosPane.setFitToWidth(true);
 		vboxVideos.setSpacing(10);
-		for (HistoryVideo video : history) vboxVideos.getChildren().add(getVideoButton(video));
+		for (HistoryVideo video : History.getAllHistory())
+			vboxVideos.getChildren().add(getVideoButton(video));
+		System.out.println(History.getAllHistory().size());
+//		int i = 0;
+//		for (HistoryVideo video : history) {
+//			i++;
+//			vboxVideos.getChildren().add(getVideoButton(video));
+//			if (i >= 50) break;
+//		}
+//		Platform.runLater(() -> {
+//			int count = 0;
+//			for (HistoryVideo video : history) {
+//				count++;
+//				if (count < 50) continue;
+//				vboxVideos.getChildren().add(getVideoButton(video));
+//			}
+//		});
 	}
 
 	@FXML
@@ -79,34 +84,41 @@ public class HistoryController {
 	private JFXButton videoInfoPlay;
 
 	@FXML
-	private JFXButton videoInfoFav;
+	private FontAwesomeIconView videoInfoFav, videoInfoDelete;
 
 	@FXML
-	private JFXButton videoInfoHistoryDelete;
+	private JFXButton videoInfoHistoryDelete, videoInfoOpenVideosTab;
 
 	private void openVideoInfo(HistoryVideo video) {
 		if (video.isFavorite())
-			videoInfoFav.setText("Favorisiert");
+			videoInfoFav.setFill(Paint.valueOf("#ff0000"));
 		else
-			videoInfoFav.setText("Favorisieren");
+			videoInfoFav.setFill(Paint.valueOf("#000000"));
 		videoInfoPane.setVisible(true);
 		videoInfoTitel.setText(video.getName());
 		videoInfoImage.setImage(null);
 		videoInfoPlay.setOnAction(e -> video.play());
 		videoInfoHistoryDelete.setOnAction(event -> {
 			video.getHistory().removeAll();
-			Data.history.clear();
-			for (UUID uuid : History.getAllHistory()) Data.history.add(new HistoryVideo(uuid));
 			vboxVideos.getChildren().clear();
-			for (HistoryVideo videos : history) vboxVideos.getChildren().add(getVideoButton(videos));
+			for (HistoryVideo videos : History.getAllHistory())
+				vboxVideos.getChildren().add(getVideoButton(videos));
 		});
-		videoInfoFav.setOnAction(event -> {
+		videoInfoOpenVideosTab.setOnAction(event -> video.openInVideosTab());
+		videoInfoDelete.setOnMouseClicked(event -> {
+			if (!video.delete()) return;
+			videoInfoPane.setVisible(false);
+			vboxVideos.getChildren().clear();
+			for (HistoryVideo videos : History.getAllHistory())
+				vboxVideos.getChildren().add(getVideoButton(videos));
+		});
+		videoInfoFav.setOnMouseClicked(event -> {
 			if (video.isFavorite()) {
 				video.removeFromFavorites();
-				videoInfoFav.setText("Favorisieren");
+				videoInfoFav.setFill(Paint.valueOf("#000000"));
 			} else {
 				video.addToFavorites();
-				videoInfoFav.setText("Favorisiert");
+				videoInfoFav.setFill(Paint.valueOf("#ff0000"));
 			}
 		});
 

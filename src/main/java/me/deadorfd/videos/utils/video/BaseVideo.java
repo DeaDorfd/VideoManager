@@ -12,6 +12,18 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Stage;
+import me.deadorfd.videos.App;
+import me.deadorfd.videos.controller.MediaPlayerController;
+import me.deadorfd.videos.controller.VideosController;
 import me.deadorfd.videos.utils.sql.Favorites;
 import me.deadorfd.videos.utils.sql.History;
 import me.deadorfd.videos.utils.video.info.BaseVideoInfo;
@@ -32,14 +44,53 @@ public abstract class BaseVideo {
 	}
 
 	public void play() {
+		if (!getFormat().equals("mp4")) {
+			try {
+				Desktop.getDesktop().open(file);
+				History.create(getPath());
+			} catch (IOException e) {}
+			return;
+		}
+		Parent root;
 		try {
-			Desktop.getDesktop().open(file);
+			MediaPlayerController.video = this;
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/pages/MediaPlayerPage.fxml"));
+			root = loader.load();
+			Stage stage = new Stage();
+			stage.setTitle(getName());
+			stage.setScene(new Scene(root));
+			stage.setResizable(true);
+			stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+			MediaPlayerController controller = (MediaPlayerController) loader.getController();
+			stage.show();
+			stage.setOnCloseRequest(event -> {
+				controller.stop();
+			});
 			History.create(getPath());
-		} catch (IOException e) {}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Boolean delete() {
+		Alert alert = new Alert(AlertType.WARNING,
+				"Bist du dir sicher das du das Video löschen möchtest? \n(Das Video wird unwiederruflich gelöscht)",
+				ButtonType.YES, ButtonType.NO);
+		alert.setTitle("Video Löschen?");
+		alert.showAndWait();
+		ButtonType result = alert.getResult();
+		if (result == ButtonType.NO) return false;
+		file.delete();
+		return true;
+	}
+
+	public void openInVideosTab() {
+		VideosController.prePath = getPath();
+		new App().changePage("Videos");
 	}
 
 	public String getPath() {
-		return file.getAbsolutePath();
+		return file.getAbsolutePath().replace('\\', '/');
 	}
 
 	public Boolean isFavorite() {

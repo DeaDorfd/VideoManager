@@ -29,13 +29,7 @@ import me.deadorfd.videos.utils.video.info.NormalVideoInfo;
  */
 public class SearchController {
 	@FXML
-	private JFXButton buttonMain;
-
-	@FXML
-	private JFXButton buttonOpenFolder;
-
-	@FXML
-	private JFXButton buttonBack;
+	private JFXButton buttonMain, buttonOpenFolder, buttonBack;
 
 	@FXML
 	private ScrollPane videosPane;
@@ -91,10 +85,7 @@ public class SearchController {
 	private JFXTextArea videoInfos;
 
 	@FXML
-	private JFXButton videoInfoPlay;
-
-	@FXML
-	private JFXButton videoInfoFav;
+	private JFXButton videoInfoPlay, videoInfoFav;
 
 	private void openVideoInfo(NormalVideo video) {
 		if (video.isFavorite())

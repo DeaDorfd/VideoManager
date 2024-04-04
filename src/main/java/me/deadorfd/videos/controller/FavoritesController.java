@@ -5,6 +5,7 @@ import java.io.File;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -14,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import me.deadorfd.videos.App;
 import me.deadorfd.videos.utils.sql.Favorites;
@@ -29,13 +31,7 @@ import me.deadorfd.videos.utils.video.info.NormalVideoInfo;
  */
 public class FavoritesController {
 	@FXML
-	private JFXButton buttonMain;
-
-	@FXML
-	private JFXButton buttonOpenFolder;
-
-	@FXML
-	private JFXButton buttonBack;
+	private JFXButton buttonMain, buttonOpenFolder, buttonBack;
 
 	@FXML
 	private ScrollPane videosPane;
@@ -71,33 +67,32 @@ public class FavoritesController {
 	private JFXTextArea videoInfos;
 
 	@FXML
-	private JFXButton videoInfoPlay;
+	private JFXButton videoInfoPlay, videoInfoHistoryDelete, videoInfoOpenVideosTab;
 
 	@FXML
-	private JFXButton videoInfoFav;
-
-	@FXML
-	private JFXButton videoInfoHistoryDelete;
+	private FontAwesomeIconView videoInfoFav, videoInfoDelete;
 
 	private void openVideoInfo(BaseVideo video) {
 		if (video.isFavorite())
-			videoInfoFav.setText("Favorisiert");
+			videoInfoFav.setFill(Paint.valueOf("#ff0000"));
 		else
-			videoInfoFav.setText("Favorisieren");
+			videoInfoFav.setFill(Paint.valueOf("#000000"));
 		videoInfoPane.setVisible(true);
 		videoInfoTitel.setText(video.getName());
 		videoInfoImage.setImage(null);
 		videoInfoPlay.setOnAction(e -> video.play());
-		videoInfoFav.setOnAction(event -> {
+		videoInfoOpenVideosTab.setOnAction(event -> video.openInVideosTab());
+		videoInfoDelete.setOnMouseClicked(event -> video.delete());
+		videoInfoFav.setOnMouseClicked(event -> {
 			if (video.isFavorite()) {
 				video.removeFromFavorites();
-				videoInfoFav.setText("Favorisieren");
+				videoInfoFav.setFill(Paint.valueOf("#000000"));
 				vboxVideos.getChildren().clear();
 				for (BaseVideo videos : Favorites.getAllFavorites())
 					vboxVideos.getChildren().add(getVideoButton(videos));
 			} else {
 				video.addToFavorites();
-				videoInfoFav.setText("Favorisiert");
+				videoInfoFav.setFill(Paint.valueOf("#ff0000"));
 				vboxVideos.getChildren().clear();
 				for (BaseVideo videos : Favorites.getAllFavorites())
 					vboxVideos.getChildren().add(getVideoButton(videos));

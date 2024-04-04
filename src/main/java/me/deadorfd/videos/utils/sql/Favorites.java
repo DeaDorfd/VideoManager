@@ -25,15 +25,29 @@ public class Favorites {
 	}
 
 	public void create() {
-		if (!exists()) SQLite.update("INSERT INTO Favorites(VideoPath) VALUES ('" + video.getPath() + "');");
+		if (exists()) return;
+		try {
+			PreparedStatement ps = SQLite.conn
+					.prepareStatement("INSERT INTO Favorites(VideoPath) VALUES (?)");
+			ps.setString(1, video.getPath());
+			ps.executeUpdate();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public Boolean exists() {
 		if (!SQLite.isConnected()) return false;
+
 		try {
-			ResultSet rs = SQLite
-					.getResult("SELECT * FROM Favorites WHERE VideoPath= '" + video.getPath() + "'");
-			if (rs.next()) return rs.getString("VideoPath") != null;
+			PreparedStatement ps = SQLite.conn.prepareStatement("SELECT * FROM Favorites WHERE VideoPath=?");
+			ps.setString(1, video.getPath());
+			ResultSet rs = ps.executeQuery();
+			boolean exists = rs.next();
+			rs.close();
+			ps.close();
+			return exists;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -43,8 +57,8 @@ public class Favorites {
 	public Boolean remove() {
 		if (!SQLite.isConnected()) return false;
 		try {
-			PreparedStatement ps = SQLite.conn
-					.prepareStatement("DELETE FROM Favorites WHERE VideoPath='" + video.getPath() + "'");
+			PreparedStatement ps = SQLite.conn.prepareStatement("DELETE FROM Favorites WHERE VideoPath=?");
+			ps.setString(1, video.getPath());
 			int i = ps.executeUpdate();
 			ps.close();
 			return i == 1;
@@ -56,8 +70,16 @@ public class Favorites {
 
 	public void setVideoPath(String path) {
 		if (!exists()) return;
-		SQLite.update(
-				"UPDATE Favorites SET VideoPath= '" + path + "' WHERE VideoPath= '" + video.getPath() + "'");
+		try {
+			PreparedStatement ps = SQLite.conn
+					.prepareStatement("UPDATE Favorites SET VideoPath=? WHERE VideoPath=?");
+			ps.setString(1, path);
+			ps.setString(2, video.getPath());
+			int i = ps.executeUpdate();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static ArrayList<BaseVideo> getAllFavorites() {

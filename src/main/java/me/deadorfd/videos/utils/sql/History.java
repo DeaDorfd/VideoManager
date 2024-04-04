@@ -8,10 +8,16 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.UUID;
+
+import me.deadorfd.videos.utils.Data;
+import me.deadorfd.videos.utils.Settings;
+import me.deadorfd.videos.utils.Utils;
+import me.deadorfd.videos.utils.video.HistoryVideo;
 
 /**
  * @Author DeaDorfd
@@ -33,19 +39,47 @@ public class History {
 			for (UUID oldUUID : getAllInSameDay(path)) new History(oldUUID).remove();
 		}
 		UUID uuid = UUID.randomUUID();
-		SQLite.update("INSERT INTO History(UUID, VideoPath, WatchTime) VALUES ('" + uuid
-				.toString() + "','" + path + "','" + Instant.now().getEpochSecond() + "');");
+		try {
+			PreparedStatement ps = SQLite.conn
+					.prepareStatement("INSERT INTO History(UUID, VideoPath, WatchTime) VALUES (?,?,?)");
+			ps.setString(1, uuid.toString());
+			ps.setString(2, path);
+			ps.setLong(3, Instant.now().getEpochSecond());
+			ps.executeUpdate();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public Boolean exists() {
 		if (!SQLite.isConnected()) return false;
 		try {
-			ResultSet rs = SQLite.getResult("SELECT * FROM History WHERE UUID= '" + uuid + "'");
-			if (rs.next()) return rs.getString("UUID") != null;
+			PreparedStatement ps = SQLite.conn.prepareStatement("SELECT * FROM History WHERE UUID=?");
+			ps.setString(1, uuid.toString());
+			ResultSet rs = ps.executeQuery();
+			boolean exists = rs.next();
+			rs.close();
+			ps.close();
+			return exists;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public void setPath(String path) {
+		if (!exists()) return;
+		try {
+			PreparedStatement ps = SQLite.conn
+					.prepareStatement("UPDATE History SET VideoPath=? WHERE UUID=?");
+			ps.setString(1, path);
+			ps.setString(2, uuid.toString());
+			int i = ps.executeUpdate();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String getPath() {
@@ -86,6 +120,26 @@ public class History {
 		return format.format(date);
 	}
 
+	public Date getDate() {
+		if (!exists()) return null;
+		ResultSet rs = SQLite.getResult("Select WatchTime FROM History WHERE UUID='" + uuid + "'");
+		try {
+			while (rs.next())
+				return Date.from(Instant.ofEpochSecond(rs.getLong("WatchTime")));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public boolean isWatchedInTheLastDays(Integer time) {
+		if (!exists()) return false;
+		Calendar daysAgo = Calendar.getInstance();
+		daysAgo.add(Calendar.DAY_OF_MONTH, -time);
+		Date daysAgoDate = daysAgo.getTime();
+		return getDate().before(daysAgoDate);
+	}
+
 	public Boolean remove() {
 		if (!SQLite.isConnected()) return false;
 		try {
@@ -103,8 +157,8 @@ public class History {
 	public Boolean removeAll() {
 		if (!SQLite.isConnected()) return false;
 		try {
-			PreparedStatement ps = SQLite.conn
-					.prepareStatement("DELETE FROM History WHERE VideoPath='" + getPath() + "'");
+			PreparedStatement ps = SQLite.conn.prepareStatement("DELETE FROM History WHERE VideoPath=?");
+			ps.setString(1, getPath());
 			int i = ps.executeUpdate();
 			ps.close();
 			return i == 1;
@@ -114,13 +168,33 @@ public class History {
 		return false;
 	}
 
-	public static ArrayList<UUID> getAllHistory() {
-		ArrayList<UUID> history = new ArrayList<>();
+	public static ArrayList<HistoryVideo> getAllHistory() {
+		ArrayList<HistoryVideo> history = new ArrayList<>();
 		try {
 			PreparedStatement ps = SQLite.conn.prepareStatement("SELECT * FROM History ORDER BY ID DESC");
 			ResultSet rs = ps.executeQuery();
-			while (rs.next())
-				history.add(UUID.fromString(rs.getString("UUID")));
+			while (rs.next()) {
+				HistoryVideo video = new HistoryVideo(UUID.fromString(rs.getString("UUID")));
+				if (Boolean.valueOf(new Setting(Settings.HISTORY_CLEAR).getStatus())) {
+					if (video.getHistory().isWatchedInTheLastDays(
+							Integer.valueOf(new Setting(Settings.HISTORY_CLEAR_DAYS).getStatus()))) {
+						video.getHistory().remove();
+						continue;
+					}
+				}
+				if (!video.getFile().exists()) {
+					String newPath = Utils.getPathIfFileDoesntExists(video.getFile(), Data.oripath);
+					if (newPath != null) {
+						video.getHistory().setPath(newPath);
+						history.add(new HistoryVideo(UUID.fromString(rs.getString("UUID"))));
+					} else {
+						video.getHistory().remove();
+						continue;
+					}
+				} else {
+					history.add(video);
+				}
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -145,8 +219,8 @@ public class History {
 
 	public static Boolean isInSameDay(String path) {
 		LocalDate lDateNow = Instant.now().atOffset(ZoneOffset.UTC).toLocalDate();
-		for (UUID uuid : getAllHistory()) {
-			History history = new History(uuid);
+		for (HistoryVideo video : getAllHistory()) {
+			History history = video.getHistory();
 			if (!history.getPath().equals(path)) continue;
 			LocalDate lDateVideo = Instant.ofEpochSecond(history.getTime()).atOffset(ZoneOffset.UTC)
 					.toLocalDate();
@@ -161,15 +235,15 @@ public class History {
 	public static ArrayList<UUID> getAllInSameDay(String path) {
 		ArrayList<UUID> uuidList = new ArrayList<>();
 		LocalDate lDateNow = Instant.now().atOffset(ZoneOffset.UTC).toLocalDate();
-		for (UUID uuid : getAllHistory()) {
-			History history = new History(uuid);
+		for (HistoryVideo video : getAllHistory()) {
+			History history = video.getHistory();
 			if (!history.getPath().equals(path)) continue;
 			LocalDate lDateVideo = Instant.ofEpochSecond(history.getTime()).atOffset(ZoneOffset.UTC)
 					.toLocalDate();
 			if (lDateNow.getDayOfMonth() == lDateVideo.getDayOfMonth()
 					&& lDateNow.getDayOfWeek() == lDateVideo.getDayOfWeek()
 					&& lDateNow.getYear() == lDateVideo.getYear())
-				uuidList.add(uuid);
+				uuidList.add(video.getUUID());
 		}
 		return uuidList;
 	}

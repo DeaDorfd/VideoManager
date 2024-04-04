@@ -67,4 +67,17 @@ public class Utils {
 	public static URL getResource(String name) {
 		return Utils.class.getResource(name);
 	}
+
+	public static String getPathIfFileDoesntExists(File video, String path) {
+		for (File file : new File(path).listFiles()) {
+			if (file.getName().equalsIgnoreCase(video.getName())) {
+				return file.getPath().replace('\\', '/');
+			} else if (file.isDirectory()) {
+				String returnVal = getPathIfFileDoesntExists(video, file.getPath());
+				if (returnVal != null) return returnVal;
+			}
+		}
+		return null;
+	}
+
 }

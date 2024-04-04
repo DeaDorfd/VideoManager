@@ -10,6 +10,7 @@ import java.io.IOException;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -19,10 +20,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import me.deadorfd.videos.App;
 import me.deadorfd.videos.utils.Data;
 import me.deadorfd.videos.utils.Folder;
+import me.deadorfd.videos.utils.Session;
 import me.deadorfd.videos.utils.video.NormalVideo;
 import me.deadorfd.videos.utils.video.info.NormalVideoInfo;
 
@@ -36,28 +39,22 @@ import me.deadorfd.videos.utils.video.info.NormalVideoInfo;
 public class VideosController {
 
 	@FXML
-	private JFXButton buttonMain;
+	private JFXButton buttonMain, buttonOpenFolder, buttonBack;
 
 	@FXML
-	private JFXButton buttonOpenFolder;
+	private ScrollPane videosPane, folderPane;
 
 	@FXML
-	private JFXButton buttonBack;
-
-	@FXML
-	private ScrollPane videosPane;
-
-	@FXML
-	private ScrollPane folderPane;
-
-	@FXML
-	private VBox vboxVideos;
-
-	@FXML
-	private VBox vboxFolder;
+	private VBox vboxVideos, vboxFolder;
 
 	@FXML
 	public void btnOnMainClick(ActionEvent event) {
+		if (!prePath.isBlank()) prePath = "";
+		if (session == null) session = new Session(path);
+		session.setPath(path);
+		session.setVideoVValue(videosPane.getVvalue());
+		session.setFolderVValue(folderPane.getVvalue());
+		if (!videoInfoPath.isBlank()) session.setVideoInfoPath(videoInfoPath);
 		new App().changePage("Main");
 	}
 
@@ -77,6 +74,9 @@ public class VideosController {
 		}
 	}
 
+	public static String prePath = "";
+	public static Session session;
+
 	@FXML
 	private void initialize() {
 		videoInfoPane.setVisible(false);
@@ -86,8 +86,29 @@ public class VideosController {
 		folderPane.setFitToWidth(true);
 		vboxVideos.setSpacing(10);
 		vboxFolder.setSpacing(10);
-		for (File folder : folders) vboxFolder.getChildren().add(getFolderButton(new Folder(folder)));
-		for (NormalVideo video : videos) vboxVideos.getChildren().add(getVideoButton(video));
+		if (prePath.isBlank()) {
+			if (session != null) {
+				currentFolders.clear();
+				currentFolders.addAll(session.getFolders());
+				updatePath();
+				reinit();
+				if (!session.getVideoInfoPath().isBlank())
+					openVideoInfo(new NormalVideo(new File(session.getVideoInfoPath())));
+				folderPane.setVvalue(session.getFolderVValue());
+				videosPane.setVvalue(session.getVideoVValue());
+			} else {
+				for (File folder : folders) vboxFolder.getChildren().add(getFolderButton(new Folder(folder)));
+				for (NormalVideo video : videos) vboxVideos.getChildren().add(getVideoButton(video));
+			}
+		} else {
+			prePath = prePath.replaceAll(oripath, "");
+			currentFolders.clear();
+			for (String folder : prePath.split("/"))
+				if (!Data.isVideoFile(folder) & !folder.isBlank()) currentFolders.add(folder);
+			updatePath();
+			reinit();
+			openVideoInfo(new NormalVideo(new File(oripath + prePath)));
+		}
 	}
 
 	@FXML
@@ -106,24 +127,34 @@ public class VideosController {
 	private JFXButton videoInfoPlay;
 
 	@FXML
-	private JFXButton videoInfoFav;
+	private FontAwesomeIconView videoInfoFav, videoInfoDelete;
+
+	private String videoInfoPath = "";
 
 	private void openVideoInfo(NormalVideo video) {
+		videoInfoPath = video.getPath();
 		if (video.isFavorite())
-			videoInfoFav.setText("Favorisiert");
+			videoInfoFav.setFill(Paint.valueOf("#ff0000"));
 		else
-			videoInfoFav.setText("Favorisieren");
+			videoInfoFav.setFill(Paint.valueOf("#000000"));
 		videoInfoPane.setVisible(true);
 		videoInfoTitel.setText(video.getName());
 		videoInfoImage.setImage(null);
 		videoInfoPlay.setOnAction(e -> video.play());
-		videoInfoFav.setOnAction(event -> {
+		videoInfoDelete.setOnMouseClicked(event -> {
+			if (!video.delete()) return;
+			videoInfoPane.setVisible(false);
+			reinit();
+			for (File folder : folders) vboxFolder.getChildren().add(getFolderButton(new Folder(folder)));
+			for (NormalVideo videos : videos) vboxVideos.getChildren().add(getVideoButton(videos));
+		});
+		videoInfoFav.setOnMouseClicked(event -> {
 			if (video.isFavorite()) {
 				video.removeFromFavorites();
-				videoInfoFav.setText("Favorisieren");
+				videoInfoFav.setFill(Paint.valueOf("#000000"));
 			} else {
 				video.addToFavorites();
-				videoInfoFav.setText("Favorisiert");
+				videoInfoFav.setFill(Paint.valueOf("#ff0000"));
 			}
 		});
 

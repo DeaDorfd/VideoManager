@@ -1,5 +1,6 @@
 package me.deadorfd.videos.utils.sql;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -19,6 +20,8 @@ public class SQLite {
 
 	public static void connect() {
 		if (isConnected()) return;
+		if (!new File(System.getenv("APPDATA") + "/.videos").exists())
+			new File(System.getenv("APPDATA") + "/.videos").mkdir();
 		try {
 			conn = DriverManager
 					.getConnection("jdbc:sqlite:" + System.getenv("APPDATA") + "/.videos/videos.db");
@@ -43,10 +46,10 @@ public class SQLite {
 	private static void createTable() {
 		try {
 			conn.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS Favorites(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, VideoPath VARCHAR(100));")
+					"CREATE TABLE IF NOT EXISTS Favorites(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, VideoPath LONGTEXT);")
 					.executeUpdate();
 			conn.prepareStatement(
-					"CREATE TABLE IF NOT EXISTS History(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, VideoPath VARCHAR(100));")
+					"CREATE TABLE IF NOT EXISTS History(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, UUID LONGTEXT, VideoPath LONGTEXT, WatchTime BIGINT(20));")
 					.executeUpdate();
 			conn.prepareStatement(
 					"CREATE TABLE IF NOT EXISTS Settings(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, Name LONGTEXT, Status LONGTEXT);")

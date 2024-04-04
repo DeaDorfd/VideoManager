@@ -29,19 +29,22 @@ public class SettingsController {
 	private JFXButton buttonMain;
 
 	@FXML
-	private JFXTextField textfieldPath;
+	private JFXTextField textfieldPath, textfieldHistoryClearDays;
 
 	@FXML
 	private FontAwesomeIconView iconFolder;
 
 	@FXML
-	private JFXToggleButton toggleDebugMode;
+	private JFXToggleButton toggleDebugMode, toggleHistoryClear;
 
 	@FXML
 	private void initialize() {
-		textfieldPath.setText(new Setting(Settings.DEFAULT_PATH).getStatus().toString());
+		textfieldPath.setText(new Setting(Settings.DEFAULT_PATH).getStatus());
 		toggleDebugMode.setSelected(Boolean.valueOf(new Setting(Settings.DEBUG_MODE).getStatus()));
 		if (toggleDebugMode.isSelected()) toggleDebugMode.setText("AN");
+		textfieldHistoryClearDays.setText(new Setting(Settings.HISTORY_CLEAR_DAYS).getStatus());
+		toggleHistoryClear.setSelected(Boolean.valueOf(new Setting(Settings.HISTORY_CLEAR).getStatus()));
+		if (toggleHistoryClear.isSelected()) toggleHistoryClear.setText("AN");
 		iconFolder.setOnMouseClicked(event -> {
 			if (event.getButton() != MouseButton.PRIMARY) return;
 			DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -61,24 +64,37 @@ public class SettingsController {
 		textfieldPath.setOnAction(event -> {
 			File file = new File(textfieldPath.getText());
 			if (!file.exists()) {
-				textfieldPath.setText(new Setting(Settings.DEFAULT_PATH).getStatus().toString());
+				textfieldPath.setText(new Setting(Settings.DEFAULT_PATH).getStatus());
 				return;
 			}
 			textfieldPath.setText(file.getPath().replace('\\', '/'));
 			new Setting(Settings.DEFAULT_PATH).setStatus(file.getPath().replace('\\', '/'));
 		});
+		toggleHistoryClear.setOnAction(event -> {
+			new Setting(Settings.HISTORY_CLEAR).setStatus(toggleHistoryClear.isSelected() + "");
+			if (toggleHistoryClear.isSelected()) {
+				toggleHistoryClear.setText("AN");
+			} else
+				toggleHistoryClear.setText("AUS");
+		});
+		textfieldHistoryClearDays.setOnAction(
+				event -> new Setting(Settings.HISTORY_CLEAR_DAYS).setStatus(toggleHistoryClear.getText()));
 		buttonMain.setOnAction(event -> {
-			File file = new File(textfieldPath.getText());
-			if (!file.exists()) {
-				textfieldPath.setText(new Setting(Settings.DEFAULT_PATH).getStatus().toString());
-				return;
+			if (!textfieldPath.getText().isBlank()) {
+				File file = new File(textfieldPath.getText());
+				if (!file.exists()) {
+					textfieldPath.setText(new Setting(Settings.DEFAULT_PATH).getStatus());
+					return;
+				}
+				Data.path = new Setting(Settings.DEFAULT_PATH).getStatus();
+				Data.oripath = new Setting(Settings.DEFAULT_PATH).getStatus();
+				Data.currentFolders.clear();
+				FileManager.init();
+				new Setting(Settings.DEFAULT_PATH).setStatus(file.getPath().replace('\\', '/'));
 			}
-			new Setting(Settings.DEFAULT_PATH).setStatus(file.getPath().replace('\\', '/'));
 			new Setting(Settings.DEBUG_MODE).setStatus(toggleDebugMode.isSelected() + "");
-			Data.path = new Setting(Settings.DEFAULT_PATH).getStatus();
-			Data.oripath = new Setting(Settings.DEFAULT_PATH).getStatus();
-			Data.currentFolders.clear();
-			FileManager.init();
+			new Setting(Settings.HISTORY_CLEAR).setStatus(toggleHistoryClear.isSelected() + "");
+			new Setting(Settings.HISTORY_CLEAR_DAYS).setStatus(textfieldHistoryClearDays.getText());
 			new App().changePage("Main");
 		});
 	}
