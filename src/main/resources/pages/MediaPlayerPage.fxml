@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.media.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #3D4956;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.deadorfd.videos.controller.MediaPlayerController">
+   <children>
+      <MediaView fx:id="mediaView" fitHeight="720.0" fitWidth="1280.0" />
+      <FontAwesomeIconView fx:id="iconPlay" fill="WHITE" glyphName="PLAY" layoutX="625.0" layoutY="680.0" size="30.0" wrappingWidth="28.0" />
+      <JFXSlider fx:id="barVideoTime" layoutX="-3.0" layoutY="615.0" prefHeight="14.0" prefWidth="1280.0" style="-jfx-value-label-visible: false;" />
+      <FontAwesomeIconView fx:id="iconVol" fill="WHITE" glyphName="VOLUME_UP" layoutX="20.0" layoutY="680.0" size="30.0" wrappingWidth="28.0" />
+      <FontAwesomeIconView fx:id="iconSkipNext" fill="WHITE" glyphName="STEP_FORWARD" layoutX="670.0" layoutY="680.0" size="30.0" wrappingWidth="28.0" />
+      <AnchorPane fx:id="paneVol" layoutX="14.0" layoutY="575.0" prefHeight="41.0" prefWidth="285.0" style="-fx-background-color: #4d5a69;">
+         <children>
+            <FontAwesomeIconView fx:id="iconMute" fill="WHITE" glyphName="VOLUME_UP" layoutX="14.0" layoutY="31.0" size="30.0" wrappingWidth="28.0" />
+            <JFXSlider fx:id="sliderVol" layoutX="57.0" layoutY="13.0" prefHeight="14.0" prefWidth="184.0" value="100.0" />
+            <Label fx:id="labelVol" layoutX="251.0" layoutY="3.0" prefHeight="30.0" prefWidth="41.0" text="100" textFill="WHITE">
+               <font>
+                  <Font name="Candara" size="20.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <FontAwesomeIconView fx:id="iconSkipBack" fill="WHITE" glyphName="STEP_BACKWARD" layoutX="580.0" layoutY="680.0" size="30.0" wrappingWidth="22.0" />
+      <FontAwesomeIconView fx:id="iconSize" fill="WHITE" glyphName="ARROWS_H" layoutX="1220.0" layoutY="680.0" rotate="135.0" size="30.0" wrappingWidth="28.0" />
+      <Label fx:id="labelTitel" alignment="CENTER" contentDisplay="CENTER" layoutX="-3.0" layoutY="8.0" prefHeight="41.0" prefWidth="1280.0" text="Test" textFill="WHITE">
+         <font>
+            <Font name="Candara" size="25.0" />
+         </font>
+      </Label>
+      <Label fx:id="labelCurrentTime" layoutX="10.0" layoutY="630.0" prefHeight="17.0" prefWidth="80.0" text="00:00:00" textFill="WHITE">
+         <font>
+            <Font name="Candara" size="15.0" />
+         </font>
+      </Label>
+      <Label fx:id="labelEndTime" alignment="CENTER_RIGHT" layoutX="1205.0" layoutY="630.0" prefHeight="18.0" prefWidth="63.0" text="00:00:00" textFill="WHITE">
+         <font>
+            <Font name="Candara" size="15.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
