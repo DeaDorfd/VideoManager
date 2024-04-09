@@ -1,25 +1,20 @@
 package me.deadorfd.videos.controller;
 
-import java.io.File;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTextArea;
+import java.io.IOException;
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
-import javafx.event.ActionEvent;
+import com.jfoenix.controls.JFXButton;
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import me.deadorfd.videos.App;
 import me.deadorfd.videos.utils.sql.History;
 import me.deadorfd.videos.utils.video.HistoryVideo;
-import me.deadorfd.videos.utils.video.info.NormalVideoInfo;
 
 /**
  * @Author DeaDorfd
@@ -30,7 +25,7 @@ import me.deadorfd.videos.utils.video.info.NormalVideoInfo;
  */
 public class HistoryController {
 	@FXML
-	private JFXButton buttonMain, buttonBack, buttonOpenFolder;
+	private JFXButton buttonMain;
 
 	@FXML
 	private ScrollPane videosPane;
@@ -39,121 +34,51 @@ public class HistoryController {
 	private VBox vboxVideos;
 
 	@FXML
-	public void btnOnMainClick(ActionEvent event) {
-		new App().changePage("Main");
-	}
+	private AnchorPane root;
 
-	@FXML
-	private void initialize() {
-		videoInfoPane.setVisible(false);
-		videosPane.setFitToHeight(true);
-		videosPane.setFitToWidth(true);
-		vboxVideos.setSpacing(10);
-		for (HistoryVideo video : History.getAllHistory())
-			vboxVideos.getChildren().add(getVideoButton(video));
-		System.out.println(History.getAllHistory().size());
-//		int i = 0;
-//		for (HistoryVideo video : history) {
-//			i++;
-//			vboxVideos.getChildren().add(getVideoButton(video));
-//			if (i >= 50) break;
-//		}
-//		Platform.runLater(() -> {
-//			int count = 0;
-//			for (HistoryVideo video : history) {
-//				count++;
-//				if (count < 50) continue;
-//				vboxVideos.getChildren().add(getVideoButton(video));
-//			}
-//		});
-	}
-
-	@FXML
 	private AnchorPane videoInfoPane;
 
 	@FXML
-	private Label videoInfoTitel;
-
-	@FXML
-	private ImageView videoInfoImage;
-
-	@FXML
-	private JFXTextArea videoInfos;
-
-	@FXML
-	private JFXButton videoInfoPlay;
-
-	@FXML
-	private FontAwesomeIconView videoInfoFav, videoInfoDelete;
-
-	@FXML
-	private JFXButton videoInfoHistoryDelete, videoInfoOpenVideosTab;
-
-	private void openVideoInfo(HistoryVideo video) {
-		if (video.isFavorite())
-			videoInfoFav.setFill(Paint.valueOf("#ff0000"));
-		else
-			videoInfoFav.setFill(Paint.valueOf("#000000"));
-		videoInfoPane.setVisible(true);
-		videoInfoTitel.setText(video.getName());
-		videoInfoImage.setImage(null);
-		videoInfoPlay.setOnAction(e -> video.play());
-		videoInfoHistoryDelete.setOnAction(event -> {
-			video.getHistory().removeAll();
-			vboxVideos.getChildren().clear();
-			for (HistoryVideo videos : History.getAllHistory())
-				vboxVideos.getChildren().add(getVideoButton(videos));
+	private void initialize() {
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/pages/VideoInfoPage.fxml"));
+		try {
+			videoInfoPane = loader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		VideoInfoController controller = (VideoInfoController) loader.getController();
+		videoInfoPane.setLayoutX(478);
+		videoInfoPane.setLayoutY(48);
+		root.getChildren().add(videoInfoPane);
+		buttonMain.setOnAction(event -> new App().changePage("Main"));
+		videosPane.setFitToHeight(true);
+		videosPane.setFitToWidth(true);
+		vboxVideos.setSpacing(10);
+		Platform.runLater(() -> {
+			for (HistoryVideo video : History.getAllHistory())
+				vboxVideos.getChildren().add(getVideoButton(video, controller));
 		});
-		videoInfoOpenVideosTab.setOnAction(event -> video.openInVideosTab());
-		videoInfoDelete.setOnMouseClicked(event -> {
-			if (!video.delete()) return;
-			videoInfoPane.setVisible(false);
-			vboxVideos.getChildren().clear();
-			for (HistoryVideo videos : History.getAllHistory())
-				vboxVideos.getChildren().add(getVideoButton(videos));
-		});
-		videoInfoFav.setOnMouseClicked(event -> {
-			if (video.isFavorite()) {
-				video.removeFromFavorites();
-				videoInfoFav.setFill(Paint.valueOf("#000000"));
-			} else {
-				video.addToFavorites();
-				videoInfoFav.setFill(Paint.valueOf("#ff0000"));
-			}
-		});
-
-		videoInfos.setText(" \n \n\nLoading...\n \n ");
-
-		// Infos
-		new Thread(() -> {
-			NormalVideoInfo info = (NormalVideoInfo) video.getVideoInfo();
-			String lastImg = info.getFrame();
-			videoInfoImage.setImage(new Image("file:/" + lastImg));
-			videoInfos.setText(info.getDuration() + "\nErstellt: "
-					+ video.createdDate()
-					+ "\nGröße: "
-					+ video.getFileSizeAsString()
-					+ "\nAuflösung: "
-					+ info.getWidth()
-					+ " x "
-					+ info.getHeight()
-					+ "\nFormat: "
-					+ video.getFormat()
-					+ "\nFPS: "
-					+ info.getFrameRate()
-					+ "\nZuletzt gesehen: "
-					+ video.getHistory().getTimeInString());
-			File file = new File(lastImg);
-			file.delete();
-		}).start();
 	}
 
-	private JFXButton getVideoButton(HistoryVideo video) {
+	private JFXButton getVideoButton(HistoryVideo video, VideoInfoController controller) {
 		JFXButton button = new JFXButton(video.getName());
 		button.setFont(new Font("Candara", 15));
 		button.setPrefSize(200, 25);
 		button.setStyle("-fx-background-color: #3D4956; -fx-text-fill: #ffff;");
-		button.setOnAction(event -> openVideoInfo(video));
+		button.setOnAction(event -> {
+			videoInfoPane.setVisible(false);
+			controller.openVideoInfo(video);
+			controller.setOnHistoryDelete(video, () -> {
+				vboxVideos.getChildren().clear();
+				for (HistoryVideo videos : History.getAllHistory())
+					vboxVideos.getChildren().add(getVideoButton(videos, controller));
+			});
+			controller.setOnVideoDelete(video, () -> {
+				vboxVideos.getChildren().clear();
+				for (HistoryVideo videos : History.getAllHistory())
+					vboxVideos.getChildren().add(getVideoButton(videos, controller));
+			});
+		});
 		button.setOnMouseClicked(event -> {
 			if (event.getButton() == MouseButton.MIDDLE) video.getVideoInfo().openImage();
 		});

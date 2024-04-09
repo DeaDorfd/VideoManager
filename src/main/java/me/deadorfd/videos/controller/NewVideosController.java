@@ -1,17 +1,14 @@
 package me.deadorfd.videos.controller;
 
 import java.io.File;
+import java.io.IOException;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXTextArea;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -20,7 +17,6 @@ import me.deadorfd.videos.App;
 import me.deadorfd.videos.utils.Data;
 import me.deadorfd.videos.utils.Utils;
 import me.deadorfd.videos.utils.video.NormalVideo;
-import me.deadorfd.videos.utils.video.info.NormalVideoInfo;
 
 /**
  * @Author DeaDorfd
@@ -43,7 +39,22 @@ public class NewVideosController {
 	private JFXCheckBox checkboxTenDays, checkboxThirtyDays;
 
 	@FXML
+	private AnchorPane root;
+
+	private AnchorPane videoInfoPane;
+
+	@FXML
 	private void initialize() {
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/pages/VideoInfoPage.fxml"));
+		try {
+			videoInfoPane = loader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		VideoInfoController controller = (VideoInfoController) loader.getController();
+		videoInfoPane.setLayoutX(478);
+		videoInfoPane.setLayoutY(48);
+		root.getChildren().add(videoInfoPane);
 		buttonMain.setOnAction(event -> new App().changePage("Main"));
 		videoInfoPane.setVisible(false);
 		videosPane.setFitToHeight(true);
@@ -55,8 +66,8 @@ public class NewVideosController {
 			vboxVideos.getChildren().clear();
 			Platform.runLater(() -> {
 				initVideos(10);
-				Data.createdInLastThirtyDays
-						.forEach(file -> vboxVideos.getChildren().add(getVideoButton(new NormalVideo(file))));
+				Data.createdInLastThirtyDays.forEach(file -> vboxVideos.getChildren()
+						.add(getVideoButton(new NormalVideo(file), controller)));
 			});
 		});
 		checkboxThirtyDays.setOnAction(event -> {
@@ -65,8 +76,8 @@ public class NewVideosController {
 			vboxVideos.getChildren().clear();
 			Platform.runLater(() -> {
 				initVideos(30);
-				Data.createdInLastThirtyDays
-						.forEach(file -> vboxVideos.getChildren().add(getVideoButton(new NormalVideo(file))));
+				Data.createdInLastThirtyDays.forEach(file -> vboxVideos.getChildren()
+						.add(getVideoButton(new NormalVideo(file), controller)));
 			});
 		});
 	}
@@ -87,70 +98,22 @@ public class NewVideosController {
 		}
 	}
 
-	@FXML
-	private AnchorPane videoInfoPane;
-
-	@FXML
-	private Label videoInfoTitel;
-
-	@FXML
-	private ImageView videoInfoImage;
-
-	@FXML
-	private JFXTextArea videoInfos;
-
-	@FXML
-	private JFXButton videoInfoPlay, videoInfoFav;
-
-	private void openVideoInfo(NormalVideo video) {
-		if (video.isFavorite())
-			videoInfoFav.setText("Favorisiert");
-		else
-			videoInfoFav.setText("Favorisieren");
-		videoInfoPane.setVisible(true);
-		videoInfoTitel.setText(video.getName());
-		videoInfoImage.setImage(null);
-		videoInfoPlay.setOnAction(e -> video.play());
-		videoInfoFav.setOnAction(event -> {
-			if (video.isFavorite()) {
-				video.removeFromFavorites();
-				videoInfoFav.setText("Favorisieren");
-			} else {
-				video.addToFavorites();
-				videoInfoFav.setText("Favorisiert");
-			}
-		});
-
-		videoInfos.setText(" \n \n\nLoading...\n \n ");
-
-		// Infos
-		new Thread(() -> {
-			NormalVideoInfo info = (NormalVideoInfo) video.getVideoInfo();
-			String lastImg = info.getFrame();
-			videoInfoImage.setImage(new Image("file:/" + lastImg));
-			videoInfos.setText(info.getDuration() + "\nErstellt: "
-					+ video.createdDate()
-					+ "\nGröße: "
-					+ video.getFileSizeAsString()
-					+ "\nAuflösung: "
-					+ info.getWidth()
-					+ " x "
-					+ info.getHeight()
-					+ "\nFormat: "
-					+ video.getFormat()
-					+ "\nFPS: "
-					+ info.getFrameRate());
-			File file = new File(lastImg);
-			file.delete();
-		}).start();
-	}
-
-	private JFXButton getVideoButton(NormalVideo video) {
+	private JFXButton getVideoButton(NormalVideo video, VideoInfoController controller) {
 		JFXButton button = new JFXButton(video.getName());
 		button.setFont(new Font("Candara", 15));
 		button.setPrefSize(350, 35);
 		button.setStyle("-fx-background-color: #3D4956; -fx-text-fill: #ffff;");
-		button.setOnAction(event -> openVideoInfo(video));
+		button.setOnAction(event -> {
+			videoInfoPane.setVisible(false);
+			controller.openVideoInfo(video);
+			controller.setOnVideoDelete(video, () -> {
+				vboxVideos.getChildren().clear();
+				if (checkboxTenDays.isSelected()) initVideos(10);
+				if (checkboxThirtyDays.isSelected()) initVideos(30);
+				Data.createdInLastThirtyDays.forEach(file -> vboxVideos.getChildren()
+						.add(getVideoButton(new NormalVideo(file), controller)));
+			});
+		});
 		button.setOnMouseClicked(event -> {
 			if (event.getButton() == MouseButton.MIDDLE) video.getVideoInfo().openImage();
 		});

@@ -9,6 +9,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaPlayer.Status;
@@ -30,6 +31,8 @@ import me.deadorfd.videos.utils.video.BaseVideo;
 public class MediaPlayerController {
 
 	@FXML
+	private StackPane stackpaneMedia;
+
 	private MediaView mediaView;
 
 	@FXML
@@ -79,7 +82,9 @@ public class MediaPlayerController {
 		labelTitel.setText(video.getName());
 		Media media = new Media(video.getFile().toURI().toString());
 		player = new MediaPlayer(media);
-		mediaView.setMediaPlayer(player);
+		mediaView = new MediaView(player);
+		mediaView.setPreserveRatio(true);
+		stackpaneMedia.getChildren().add(mediaView);
 		player.setVolume(Double.valueOf(new Setting(Settings.MEDIAPLAYER_VOLUME).getStatus()));
 		sliderVol.setValue(Double.valueOf(new Setting(Settings.MEDIAPLAYER_VOLUME).getStatus()) * 100.0);
 		labelVol.setText(Double.valueOf(sliderVol.getValue()).intValue() + "");
@@ -164,28 +169,32 @@ public class MediaPlayerController {
 				barVideoTime.setVisible(false);
 			}
 		});
-		root.widthProperty().addListener(event -> {
-			mediaView.setFitWidth(root.getWidth());
-			barVideoTime.setPrefWidth(root.getWidth());
-			labelTitel.setPrefWidth(root.getWidth());
-			labelEndTime.setLayoutX(root.getWidth() - 75);
-			iconSize.setLayoutX(root.getWidth() - 60);
-			iconSkipNext.setLayoutX((root.getWidth() / 2) + 45);
-			iconPlay.setLayoutX(root.getWidth() / 2);
-			iconSkipBack.setLayoutX((root.getWidth() / 2) - 45);
-		});
-		root.heightProperty().addListener(event -> {
-			mediaView.setFitHeight(root.getHeight());
-			iconSize.setLayoutY(root.getHeight() - 40);
-			iconSkipNext.setLayoutY(root.getHeight() - 40);
-			iconPlay.setLayoutY(root.getHeight() - 40);
-			iconSkipBack.setLayoutY(root.getHeight() - 40);
-			barVideoTime.setLayoutY(root.getHeight() - 105);
-			labelCurrentTime.setLayoutY(root.getHeight() - 90);
-			labelEndTime.setLayoutY(root.getHeight() - 90);
-			paneVol.setLayoutY(root.getHeight() - 145);
-			iconVol.setLayoutY(root.getHeight() - 40);
-		});
+		root.widthProperty().addListener(event -> resize(root.getWidth(), root.getHeight()));
+		root.heightProperty().addListener(event -> resize(root.getWidth(), root.getHeight()));
+	}
+
+	private void resize(Double width, Double height) {
+		stackpaneMedia.setPrefWidth(width);
+		mediaView.setFitWidth(width);
+		barVideoTime.setPrefWidth(width);
+		labelTitel.setPrefWidth(width);
+		labelEndTime.setLayoutX(width - 75);
+		iconSize.setLayoutX(width - 60);
+		iconSkipNext.setLayoutX((width / 2) + 45);
+		iconPlay.setLayoutX(width / 2);
+		iconSkipBack.setLayoutX((width / 2) - 45);
+
+		stackpaneMedia.setPrefHeight(height);
+		mediaView.setFitHeight(height);
+		iconSize.setLayoutY(height - 40);
+		iconSkipNext.setLayoutY(height - 40);
+		iconPlay.setLayoutY(height - 40);
+		iconSkipBack.setLayoutY(height - 40);
+		barVideoTime.setLayoutY(height - 105);
+		labelCurrentTime.setLayoutY(height - 90);
+		labelEndTime.setLayoutY(height - 90);
+		paneVol.setLayoutY(height - 145);
+		iconVol.setLayoutY(height - 40);
 	}
 
 	public void stop() {

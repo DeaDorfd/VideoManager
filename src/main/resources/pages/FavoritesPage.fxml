@@ -1,52 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.*?>
-<?import de.jensd.fx.glyphs.fontawesome.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #3D4956;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.deadorfd.videos.controller.FavoritesController">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-color: #3D4956;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.deadorfd.videos.controller.FavoritesController">
    <children>
       <ScrollPane fx:id="videosPane" hbarPolicy="NEVER" layoutX="14.0" layoutY="28.0" prefHeight="650.0" prefWidth="240.0" style="-fx-background-color: #4d5a69;">
          <content>
             <VBox fx:id="vboxVideos" alignment="BASELINE_CENTER" prefHeight="648.0" prefWidth="240.0" style="-fx-background-color: #4d5a69;" />
          </content></ScrollPane>
-      <AnchorPane fx:id="videoInfoPane" layoutX="478.0" layoutY="48.0" prefHeight="610.0" prefWidth="752.0" style="-fx-background-color: #4d5a69;">
-         <children>
-            <ImageView fx:id="videoInfoImage" disable="true" fitHeight="231.0" fitWidth="436.0" layoutX="159.0" layoutY="55.0" pickOnBounds="true" preserveRatio="true" />
-            <Label fx:id="videoInfoTitel" alignment="CENTER" layoutX="18.0" layoutY="20.0" prefHeight="35.0" prefWidth="719.0" text="Titel" textAlignment="CENTER" textFill="WHITE" wrapText="true">
-               <font>
-                  <Font name="Candara" size="20.0" />
-               </font>
-            </Label>
-            <JFXButton fx:id="videoInfoPlay" buttonType="RAISED" layoutX="247.0" layoutY="511.0" prefHeight="35.0" prefWidth="259.0" style="-fx-background-color: #3D4956;" text="Video Abspielen" textFill="WHITE">
-               <font>
-                  <Font name="Candara" size="15.0" />
-               </font>
-            </JFXButton>
-            <JFXTextArea fx:id="videoInfos" editable="false" layoutX="247.0" layoutY="326.0" prefHeight="159.0" prefWidth="259.0" style="-fx-background-color: #3D4956; -fx-text-fill: #ffff;" wrapText="true">
-               <font>
-                  <Font name="Candara" size="17.0" />
-               </font>
-            </JFXTextArea>
-            <FontAwesomeIconView fx:id="videoInfoFav" glyphName="HEART" layoutX="683.0" layoutY="48.0" size="30.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" wrappingWidth="31.0" />
-            <JFXButton fx:id="videoInfoOpenVideosTab" buttonType="RAISED" layoutX="247.0" layoutY="561.0" prefHeight="35.0" prefWidth="259.0" style="-fx-background-color: #3D4956;" text="In Tab &quot;Videos&quot; Öffnen" textFill="WHITE">
-               <font>
-                  <Font name="Candara" size="15.0" />
-               </font>
-            </JFXButton>
-            <FontAwesomeIconView fx:id="videoInfoDelete" glyphName="TRASH" layoutX="41.0" layoutY="48.0" size="30.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" wrappingWidth="31.0" />
-         </children>
-      </AnchorPane>
       <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="35.0" prefWidth="1249.0" text="Favoriten" textFill="#fffdfd" underline="true">
          <font>
             <Font name="Constantia Bold Italic" size="30.0" />
          </font>
       </Label>
-      <JFXButton fx:id="buttonMain" alignment="CENTER" buttonType="RAISED" layoutX="543.0" layoutY="671.0" onAction="#btnOnMainClick" prefHeight="35.0" prefWidth="191.0" style="-fx-background-color: #4d5a69;" text="Zum Hauptmenü" textFill="WHITE">
+      <JFXButton fx:id="buttonMain" alignment="CENTER" buttonType="RAISED" layoutX="543.0" layoutY="671.0" prefHeight="35.0" prefWidth="191.0" style="-fx-background-color: #4d5a69;" text="Zum Hauptmenü" textFill="WHITE">
          <font>
             <Font name="Arial" size="15.0" />
          </font>

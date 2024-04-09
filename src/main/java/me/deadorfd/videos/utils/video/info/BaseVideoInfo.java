@@ -139,6 +139,7 @@ public abstract class BaseVideoInfo {
 	}
 
 	public String getFrame() {
+		if (img == null) return null;
 		return img.replace('\\', '/');
 	}
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="videoInfoPane" prefHeight="610.0" prefWidth="752.0" style="-fx-background-color: #4d5a69;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.deadorfd.videos.controller.VideoInfoController">
+   <children>
+      <ImageView fx:id="videoInfoImage" fitHeight="231.0" fitWidth="436.0" layoutX="159.0" layoutY="55.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="videoInfoTitel" alignment="CENTER" layoutX="18.0" layoutY="20.0" prefHeight="35.0" prefWidth="719.0" text="Titel" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+         <font>
+            <Font name="Candara" size="20.0" />
+         </font>
+      </Label>
+      <JFXButton fx:id="videoInfoPlay" buttonType="RAISED" layoutX="247.0" layoutY="511.0" prefHeight="35.0" prefWidth="259.0" style="-fx-background-color: #3D4956;" text="Video Abspielen" textFill="WHITE">
+         <font>
+            <Font name="Candara" size="15.0" />
+         </font>
+      </JFXButton>
+      <JFXTextArea fx:id="videoInfos" editable="false" layoutX="247.0" layoutY="326.0" prefHeight="159.0" prefWidth="259.0" style="-fx-background-color: #3D4956; -fx-text-fill: #ffff;" wrapText="true">
+         <font>
+            <Font name="Candara" size="15.0" />
+         </font>
+      </JFXTextArea>
+      <JFXButton fx:id="videoInfoHistoryDelete" buttonType="RAISED" layoutX="18.0" layoutY="546.0" prefHeight="35.0" prefWidth="176.0" style="-fx-background-color: #3D4956;" text="Aus Verlauf Löschen" textFill="WHITE">
+         <font>
+            <Font name="Candara" size="15.0" />
+         </font>
+      </JFXButton>
+      <JFXButton fx:id="videoInfoOpenVideosTab" buttonType="RAISED" layoutX="247.0" layoutY="561.0" prefHeight="35.0" prefWidth="259.0" style="-fx-background-color: #3D4956;" text="In Tab &quot;Videos&quot; Öffnen" textFill="WHITE">
+         <font>
+            <Font name="Candara" size="15.0" />
+         </font>
+      </JFXButton>
+      <FontAwesomeIconView fx:id="videoInfoFav" glyphName="HEART" layoutX="683.0" layoutY="48.0" size="30.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" wrappingWidth="31.0" />
+      <FontAwesomeIconView fx:id="videoInfoDelete" glyphName="TRASH" layoutX="41.0" layoutY="48.0" size="30.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" wrappingWidth="31.0" />
+   </children>
+</AnchorPane>
