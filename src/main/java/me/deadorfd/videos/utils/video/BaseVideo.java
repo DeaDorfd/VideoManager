@@ -22,6 +22,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import me.deadorfd.videos.App;
+import me.deadorfd.videos.Video;
 import me.deadorfd.videos.controller.MediaPlayerController;
 import me.deadorfd.videos.controller.VideosController;
 import me.deadorfd.videos.utils.sql.Favorites;
@@ -74,9 +75,9 @@ public abstract class BaseVideo {
 
 	public Boolean delete() {
 		Alert alert = new Alert(AlertType.WARNING,
-				"Bist du dir sicher das du das Video löschen möchtest? \n(Das Video wird unwiederruflich gelöscht)",
-				ButtonType.YES, ButtonType.NO);
-		alert.setTitle("Video Löschen?");
+				Video.getLanguageAPI().getText("videoinfo.videodeletealert_text"), ButtonType.YES,
+				ButtonType.NO);
+		alert.setTitle(Video.getLanguageAPI().getText("videoinfo.videodeletealert_titel"));
 		alert.showAndWait();
 		ButtonType result = alert.getResult();
 		if (result == ButtonType.NO) return false;

@@ -8,12 +8,14 @@ import com.jfoenix.controls.JFXCheckBox;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import me.deadorfd.videos.App;
+import me.deadorfd.videos.Video;
 import me.deadorfd.videos.utils.Data;
 import me.deadorfd.videos.utils.Utils;
 import me.deadorfd.videos.utils.video.NormalVideo;
@@ -41,6 +43,9 @@ public class NewVideosController {
 	@FXML
 	private AnchorPane root;
 
+	@FXML
+	private Label labelTitel;
+
 	private AnchorPane videoInfoPane;
 
 	@FXML
@@ -55,6 +60,12 @@ public class NewVideosController {
 		videoInfoPane.setLayoutX(478);
 		videoInfoPane.setLayoutY(48);
 		root.getChildren().add(videoInfoPane);
+
+		buttonMain.setText(Video.getLanguageAPI().getText("generell.button_back"));
+		labelTitel.setText(Video.getLanguageAPI().getText("newvideos.label_titel"));
+		checkboxTenDays.setText(Video.getLanguageAPI().getText("newvideos.checkbox_tendays"));
+		checkboxThirtyDays.setText(Video.getLanguageAPI().getText("newvideos.checkbox_thirtydays"));
+
 		buttonMain.setOnAction(event -> new App().changePage("Main"));
 		videoInfoPane.setVisible(false);
 		videosPane.setFitToHeight(true);

@@ -16,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import me.deadorfd.videos.App;
+import me.deadorfd.videos.Video;
 import me.deadorfd.videos.utils.Data;
 import me.deadorfd.videos.utils.Folder;
 import me.deadorfd.videos.utils.Session;
@@ -65,6 +66,9 @@ public class VideosController {
 		videosPane.setFitToWidth(true);
 		folderPane.setFitToHeight(true);
 		folderPane.setFitToWidth(true);
+		buttonMain.setText(Video.getLanguageAPI().getText("generell.button_back"));
+		buttonBack.setText(Video.getLanguageAPI().getText("videos.button_back"));
+		buttonOpenFolder.setText(Video.getLanguageAPI().getText("videos.button_openfolder"));
 		buttonMain.setOnAction(event -> {
 			if (!prePath.isBlank()) prePath = "";
 			if (session == null) session = new Session(path);
