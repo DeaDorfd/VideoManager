@@ -103,9 +103,7 @@ public class VideoInfoController {
 		videoInfoPane.setVisible(true);
 		videoInfoTitel.setText(video.getName());
 		videoInfoPlay.setOnAction(e -> video.play());
-		if (!isHistoryVideo) {
-			videoInfoHistoryDelete.setVisible(false);
-		}
+		if (!isHistoryVideo) videoInfoHistoryDelete.setVisible(false);
 		if (isNormalVideo) {
 			videoInfoOpenVideosTab.setVisible(false);
 			videoInfoPlay.setLayoutX(247);
@@ -125,30 +123,25 @@ public class VideoInfoController {
 		videoInfos.setText(" \n \n\nLoading...\n \n ");
 
 		// Infos
-		Platform.runLater(() -> {
-			NormalVideoInfo info = (NormalVideoInfo) video.getVideoInfo();
-			String lastImg = info.getFrame();
-			Image image = new Image("file:/" + lastImg);
-			videoInfoImage.setImage(image);
-			String normaltext = Video.getLanguageAPI().getText("videoinfo.text_normalvideoinfo")
-					.replaceAll("%duration%", info.getDuration()).replaceAll("%created%", video.createdDate())
-					.replaceAll("%size%", video.getFileSizeAsString())
-					.replaceAll("%width%", info.getWidth().toString())
-					.replaceAll("%height%", info.getHeight().toString())
-					.replaceAll("%format%", video.getFormat()).replaceAll("%fps%", info.getFrameRate());
-			String historytext = null;
-			if (isHistoryVideo) historytext = Video.getLanguageAPI()
-					.getText("videoinfo.text_historyvideoinfo").replaceAll("%duration%", info.getDuration())
-					.replaceAll("%created%", video.createdDate())
-					.replaceAll("%size%", video.getFileSizeAsString())
-					.replaceAll("%width%", info.getWidth().toString())
-					.replaceAll("%height%", info.getHeight().toString())
-					.replaceAll("%format%", video.getFormat()).replaceAll("%fps%", info.getFrameRate())
-					.replaceAll("%lastwatched%", ((HistoryVideo) video).getHistory().getTimeInString());
-			videoInfos.setText((isHistoryVideo ? historytext : normaltext));
-			File file = new File(lastImg);
-			file.delete();
-		});
+		NormalVideoInfo info = (NormalVideoInfo) video.getVideoInfo();
+		String lastImg = info.getFrame();
+		Image image = new Image("file:/" + lastImg);
+		videoInfoImage.setImage(image);
+		String normaltext = Video.getLanguageAPI().getText("videoinfo.text_normalvideoinfo")
+				.replace("{duration}", info.getDuration()).replace("{created}", video.createdDate())
+				.replace("{size}", video.getFileSizeAsString()).replace("{width}", info.getWidth().toString())
+				.replace("{height}", info.getHeight().toString()).replace("{format}", video.getFormat())
+				.replace("{fps}", info.getFrameRate());
+		String historytext = null;
+		if (isHistoryVideo) historytext = Video.getLanguageAPI().getText("videoinfo.text_historyvideoinfo")
+				.replace("{duration}", info.getDuration()).replace("{created}", video.createdDate())
+				.replace("{size}", video.getFileSizeAsString()).replace("{width}", info.getWidth().toString())
+				.replace("{height}", info.getHeight().toString()).replace("{format}", video.getFormat())
+				.replace("{fps}", info.getFrameRate())
+				.replace("{lastwatched}", ((HistoryVideo) video).getHistory().getTimeInString());
+		videoInfos.setText((isHistoryVideo ? historytext : normaltext));
+		File file = new File(lastImg);
+		file.delete();
 	}
 
 }
