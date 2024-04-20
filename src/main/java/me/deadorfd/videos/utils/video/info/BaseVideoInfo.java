@@ -119,11 +119,10 @@ public abstract class BaseVideoInfo {
 		long minutes = TimeUnit.SECONDS.toMinutes(duration) - (TimeUnit.SECONDS.toHours(duration) * 60);
 		long hours = TimeUnit.SECONDS.toHours(duration);
 		long seconds = TimeUnit.SECONDS.toSeconds(duration) - (TimeUnit.SECONDS.toMinutes(duration) * 60);
-		if (hours >= 1)
-			return "Länge: " + getFormat(hours) + ":" + getFormat(minutes) + ":" + getFormat(seconds) + "";
-		if (minutes >= 1) return "Länge: 00:" + getFormat(minutes) + ":" + getFormat(seconds) + "";
-		if (minutes == 0) return "Länge: 00:00:" + getFormat(seconds) + "";
-		return "Länge: 00:00:00";
+		if (hours >= 1) return getFormat(hours) + ":" + getFormat(minutes) + ":" + getFormat(seconds) + "";
+		if (minutes >= 1) return "00:" + getFormat(minutes) + ":" + getFormat(seconds) + "";
+		if (minutes == 0) return "00:00:" + getFormat(seconds) + "";
+		return "00:00:00";
 	}
 
 	public Integer getWidth() {
@@ -139,6 +138,7 @@ public abstract class BaseVideoInfo {
 	}
 
 	public String getFrame() {
+		if (img == null) return null;
 		return img.replace('\\', '/');
 	}
 

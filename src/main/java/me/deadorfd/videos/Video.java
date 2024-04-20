@@ -7,6 +7,7 @@ import me.deadorfd.videos.utils.Data;
 import me.deadorfd.videos.utils.FileManager;
 import me.deadorfd.videos.utils.Settings;
 import me.deadorfd.videos.utils.Utils;
+import me.deadorfd.videos.utils.language.LanguageAPI;
 import me.deadorfd.videos.utils.sql.Favorites;
 import me.deadorfd.videos.utils.sql.SQLite;
 import me.deadorfd.videos.utils.sql.Setting;
@@ -22,9 +23,12 @@ public class Video {
 
 	// #3D4956 : dark , #4d5a69 : light
 
+	private static LanguageAPI languageAPI;
+
 	public static void main(String[] args) {
 		Instant start = Instant.now();
 		SQLite.connect();
+		languageAPI = new LanguageAPI();
 		Data.path = new Setting(Settings.DEFAULT_PATH).getStatus();
 		Data.oripath = new Setting(Settings.DEFAULT_PATH).getStatus();
 		FileManager.init();
@@ -42,5 +46,9 @@ public class Video {
 		Instant end = Instant.now();
 		System.out.println("Successfully started. (Took " + Duration.between(start, end).toSeconds() + "s)");
 		App.main(args);
+	}
+
+	public static LanguageAPI getLanguageAPI() {
+		return languageAPI;
 	}
 }

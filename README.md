@@ -3,34 +3,38 @@ This is a video manager where you can favorite videos and have them in your pers
 
 ## How to use?
 
-At the moment it is only open source so you have to build and rewrite it yourself. 
-It is therefore not usable if you only build it yourself and do not rewrite it.
+1. Open the file with Java 21
+2. Go to settings an set your path
+3. Have fun with the programm
 
 ## Features?
 
+- Own Mediaplayer (only supports .mp4)
+- Multilanguage System
 - Video History
 - Favorites list
-- Video search (Not tested)
+- Video search
 - Video Downloader (yt-dlp)
 - Video list with thumbnail and video information
 
 ## TODO
 
 Settings:
-- Path adjustable
-- Dark / White mode
-- Debug mode
-- Extensions for videos & folders
+- new / Old design
 
 Program in general:
+- Video Downloader (yt-dlp)
 - Video transmission (Socket)
 - Console for logging
-- Recode from Java swing to Javafx
-- Rewrite some methods to improve performance
+
+## Supported Languages
+
+- German
+- English
 
 ## Libarys
 
 - [JavaCV](https://github.com/bytedeco/javacv)
-- Java Swing
+- JavaFX
 - Own version of [YoutubeDL](https://github.com/sapher/youtubedl-java)
 - SQLite
