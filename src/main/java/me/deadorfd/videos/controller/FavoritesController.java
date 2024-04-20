@@ -5,12 +5,14 @@ import java.io.IOException;
 import com.jfoenix.controls.JFXButton;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import me.deadorfd.videos.App;
+import me.deadorfd.videos.Video;
 import me.deadorfd.videos.utils.sql.Favorites;
 import me.deadorfd.videos.utils.video.BaseVideo;
 
@@ -34,6 +36,9 @@ public class FavoritesController {
 	@FXML
 	private AnchorPane root;
 
+	@FXML
+	private Label labelTitel;
+
 	private AnchorPane videoInfoPane;
 
 	@FXML
@@ -51,6 +56,8 @@ public class FavoritesController {
 		videosPane.setFitToHeight(true);
 		videosPane.setFitToWidth(true);
 		vboxVideos.setSpacing(10);
+		buttonMain.setText(Video.getLanguageAPI().getText("generell.button_back"));
+		labelTitel.setText(Video.getLanguageAPI().getText("favorites.label_titel"));
 		buttonMain.setOnAction(event -> new App().changePage("Main"));
 		for (BaseVideo video : Favorites.getAllFavorites())
 			vboxVideos.getChildren().add(getVideoButton(video, controller));

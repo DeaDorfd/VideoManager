@@ -10,7 +10,7 @@ package me.deadorfd.videos.utils;
 public enum Settings {
 
 	DEBUG_MODE("debugMode"), DEFAULT_PATH("defaultPath"), HISTORY_CLEAR("historyclear"),
-	HISTORY_CLEAR_DAYS("historycleardays"), MEDIAPLAYER_VOLUME("mediaplayervolume");
+	HISTORY_CLEAR_DAYS("historycleardays"), MEDIAPLAYER_VOLUME("mediaplayervolume"), LANGUAGE("language");
 
 	private String name;
 

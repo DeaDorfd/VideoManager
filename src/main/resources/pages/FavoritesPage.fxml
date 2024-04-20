@@ -12,7 +12,7 @@
          <content>
             <VBox fx:id="vboxVideos" alignment="BASELINE_CENTER" prefHeight="648.0" prefWidth="240.0" style="-fx-background-color: #4d5a69;" />
          </content></ScrollPane>
-      <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="35.0" prefWidth="1249.0" text="Favoriten" textFill="#fffdfd" underline="true">
+      <Label fx:id="labelTitel" alignment="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="35.0" prefWidth="1249.0" text="Favoriten" textFill="#fffdfd" underline="true">
          <font>
             <Font name="Constantia Bold Italic" size="30.0" />
          </font>

@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
+import me.deadorfd.videos.Video;
 import me.deadorfd.videos.utils.video.BaseVideo;
 import me.deadorfd.videos.utils.video.HistoryVideo;
 import me.deadorfd.videos.utils.video.NormalVideo;
@@ -57,6 +58,9 @@ public class VideoInfoController {
 		videoInfoImage.setImage(null);
 		videoInfoPane.setVisible(false);
 		videoInfoPane.setNodeOrientation(NodeOrientation.INHERIT);
+		videoInfoPlay.setText(Video.getLanguageAPI().getText("videoinfo.button_playvideo"));
+		videoInfoHistoryDelete.setText(Video.getLanguageAPI().getText("videoinfo.button_historydelete"));
+		videoInfoOpenVideosTab.setText(Video.getLanguageAPI().getText("videoinfo.button_openinvideostab"));
 	}
 
 	public void setOnHistoryDelete(HistoryVideo video, Runnable run) {
@@ -99,9 +103,7 @@ public class VideoInfoController {
 		videoInfoPane.setVisible(true);
 		videoInfoTitel.setText(video.getName());
 		videoInfoPlay.setOnAction(e -> video.play());
-		if (!isHistoryVideo) {
-			videoInfoHistoryDelete.setVisible(false);
-		}
+		if (!isHistoryVideo) videoInfoHistoryDelete.setVisible(false);
 		if (isNormalVideo) {
 			videoInfoOpenVideosTab.setVisible(false);
 			videoInfoPlay.setLayoutX(247);
@@ -121,30 +123,25 @@ public class VideoInfoController {
 		videoInfos.setText(" \n \n\nLoading...\n \n ");
 
 		// Infos
-		Platform.runLater(() -> {
-			NormalVideoInfo info = (NormalVideoInfo) video.getVideoInfo();
-			String lastImg = info.getFrame();
-			Image image = new Image("file:/" + lastImg);
-			videoInfoImage.setImage(image);
-			videoInfos.setText(info.getDuration() + "\nErstellt: "
-					+ video.createdDate()
-					+ "\nGröße: "
-					+ video.getFileSizeAsString()
-					+ "\nAuflösung: "
-					+ info.getWidth()
-					+ " x "
-					+ info.getHeight()
-					+ "\nFormat: "
-					+ video.getFormat()
-					+ "\nFPS: "
-					+ info.getFrameRate()
-					+ "\n"
-					+ (isHistoryVideo
-							? "Zuletzt gesehen: " + ((HistoryVideo) video).getHistory().getTimeInString()
-							: ""));
-			File file = new File(lastImg);
-			file.delete();
-		});
+		NormalVideoInfo info = (NormalVideoInfo) video.getVideoInfo();
+		String lastImg = info.getFrame();
+		Image image = new Image("file:/" + lastImg);
+		videoInfoImage.setImage(image);
+		String normaltext = Video.getLanguageAPI().getText("videoinfo.text_normalvideoinfo")
+				.replace("{duration}", info.getDuration()).replace("{created}", video.createdDate())
+				.replace("{size}", video.getFileSizeAsString()).replace("{width}", info.getWidth().toString())
+				.replace("{height}", info.getHeight().toString()).replace("{format}", video.getFormat())
+				.replace("{fps}", info.getFrameRate());
+		String historytext = null;
+		if (isHistoryVideo) historytext = Video.getLanguageAPI().getText("videoinfo.text_historyvideoinfo")
+				.replace("{duration}", info.getDuration()).replace("{created}", video.createdDate())
+				.replace("{size}", video.getFileSizeAsString()).replace("{width}", info.getWidth().toString())
+				.replace("{height}", info.getHeight().toString()).replace("{format}", video.getFormat())
+				.replace("{fps}", info.getFrameRate())
+				.replace("{lastwatched}", ((HistoryVideo) video).getHistory().getTimeInString());
+		videoInfos.setText((isHistoryVideo ? historytext : normaltext));
+		File file = new File(lastImg);
+		file.delete();
 	}
 
 }

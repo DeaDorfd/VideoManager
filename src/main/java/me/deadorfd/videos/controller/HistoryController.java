@@ -7,12 +7,14 @@ import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import me.deadorfd.videos.App;
+import me.deadorfd.videos.Video;
 import me.deadorfd.videos.utils.sql.History;
 import me.deadorfd.videos.utils.video.HistoryVideo;
 
@@ -36,6 +38,9 @@ public class HistoryController {
 	@FXML
 	private AnchorPane root;
 
+	@FXML
+	private Label labelTitel;
+
 	private AnchorPane videoInfoPane;
 
 	@FXML
@@ -50,6 +55,8 @@ public class HistoryController {
 		videoInfoPane.setLayoutX(478);
 		videoInfoPane.setLayoutY(48);
 		root.getChildren().add(videoInfoPane);
+		buttonMain.setText(Video.getLanguageAPI().getText("generell.button_back"));
+		labelTitel.setText(Video.getLanguageAPI().getText("history.label_titel"));
 		buttonMain.setOnAction(event -> new App().changePage("Main"));
 		videosPane.setFitToHeight(true);
 		videosPane.setFitToWidth(true);

@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import me.deadorfd.videos.utils.Settings;
+import me.deadorfd.videos.utils.language.Languages;
 
 /**
  * @Author DeaDorfd
@@ -40,6 +41,7 @@ public class Setting {
 		if (!exists()) {
 			if (setting == Settings.HISTORY_CLEAR_DAYS) return "90";
 			if (setting == Settings.MEDIAPLAYER_VOLUME) return "1.0";
+			if (setting == Settings.LANGUAGE) return Languages.ENGLISH.getName();
 			return "";
 		}
 		ResultSet rs = SQLite.getResult("Select Status FROM Settings WHERE Name='" + setting.getName() + "'");
