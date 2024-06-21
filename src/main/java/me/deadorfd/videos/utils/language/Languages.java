@@ -11,10 +11,10 @@ public enum Languages {
 
 	GERMAN("German", "messages_DE"), ENGLISH("English", "messages_EN");
 
-	private String name;
-	private String messageFileName;
+	private final String name;
+	private final String messageFileName;
 
-	private Languages(String name, String messageFileName) {
+	Languages(String name, String messageFileName) {
 		this.name = name;
 		this.messageFileName = messageFileName;
 	}

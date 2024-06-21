@@ -24,7 +24,8 @@ import javafx.stage.Stage;
 import me.deadorfd.videos.App;
 import me.deadorfd.videos.Video;
 import me.deadorfd.videos.controller.MediaPlayerController;
-import me.deadorfd.videos.controller.VideosController;
+import me.deadorfd.videos.controller.Videos_OldController;
+import me.deadorfd.videos.utils.files.VideoFile;
 import me.deadorfd.videos.utils.sql.Favorites;
 import me.deadorfd.videos.utils.sql.History;
 import me.deadorfd.videos.utils.video.info.BaseVideoInfo;
@@ -54,7 +55,7 @@ public abstract class BaseVideo {
 		}
 		Parent root;
 		try {
-			MediaPlayerController.video = this;
+			MediaPlayerController.video = new VideoFile(getFile());
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/pages/MediaPlayerPage.fxml"));
 			root = loader.load();
 			Stage stage = new Stage();
@@ -86,7 +87,7 @@ public abstract class BaseVideo {
 	}
 
 	public void openInVideosTab() {
-		VideosController.prePath = getPath();
+		Videos_OldController.prePath = getPath();
 		new App().changePage("Videos");
 	}
 
@@ -107,8 +108,8 @@ public abstract class BaseVideo {
 	}
 
 	public String getName() {
-		return file.getName().replaceAll(".mp4", "").replaceAll(".wmv", "").replaceAll(".ts", "")
-				.replaceAll(".mov", "").replaceAll(".MOV", "");
+		return file.getName().replace(".mp4", "").replace(".wmv", "").replace(".ts", "").replace(".mov", "")
+				.replace(".MOV", "");
 	}
 
 	public String getFormat() {

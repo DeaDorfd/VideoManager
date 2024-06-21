@@ -1,33 +1,36 @@
 package me.deadorfd.videos.controller;
 
-import static me.deadorfd.videos.utils.Data.*;
-import static me.deadorfd.videos.utils.FileManager.*;
-
-import java.awt.Desktop;
-import java.io.File;
-import java.io.IOException;
-
 import com.jfoenix.controls.JFXButton;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.MouseButton;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
+import javafx.scene.layout.FlowPane;
 import me.deadorfd.videos.App;
 import me.deadorfd.videos.Video;
 import me.deadorfd.videos.utils.Data;
-import me.deadorfd.videos.utils.Folder;
-import me.deadorfd.videos.utils.Session;
-import me.deadorfd.videos.utils.video.NormalVideo;
+import me.deadorfd.videos.utils.Utils;
+import me.deadorfd.videos.utils.files.Folder;
+import me.deadorfd.videos.utils.files.VideoFile;
+
+import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Objects;
+
+import static me.deadorfd.videos.utils.Data.*;
+import static me.deadorfd.videos.utils.FileManager.updatePath;
 
 /**
  * @Author DeaDorfd
  * @Project videos
  * @Package me.deadorfd.videos.controller
- * @Date 02.02.2024
- * @Time 19:41:35
+ * @Date 06.05.2024
+ * @Time 01:05:09
  */
 public class VideosController {
 
@@ -35,148 +38,132 @@ public class VideosController {
 	private AnchorPane root;
 
 	@FXML
-	private JFXButton buttonMain, buttonOpenFolder, buttonBack;
+	private JFXButton buttonMain;
 
 	@FXML
-	private ScrollPane videosPane, folderPane;
+	private ScrollPane scrollPane;
 
 	@FXML
-	private VBox vboxVideos, vboxFolder;
+	private FlowPane flowPane;
 
-	private String videoInfoPath = "";
-	public static String prePath = "";
-	public static Session session;
+	@FXML
+	private FontAwesomeIconView back;
 
-	private AnchorPane videoInfoPane;
+	@FXML
+	private ImageView loadingGif;
 
 	@FXML
 	private void initialize() {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/pages/VideoInfoPage.fxml"));
-		try {
-			videoInfoPane = loader.load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		VideoInfoController controller = (VideoInfoController) loader.getController();
-		videoInfoPane.setLayoutX(478);
-		videoInfoPane.setLayoutY(48);
-		root.getChildren().add(videoInfoPane);
-		videoInfoPane.setVisible(false);
-		videosPane.setFitToHeight(true);
-		videosPane.setFitToWidth(true);
-		folderPane.setFitToHeight(true);
-		folderPane.setFitToWidth(true);
 		buttonMain.setText(Video.getLanguageAPI().getText("generell.button_back"));
-		buttonBack.setText(Video.getLanguageAPI().getText("videos.button_back"));
-		buttonOpenFolder.setText(Video.getLanguageAPI().getText("videos.button_openfolder"));
-		buttonMain.setOnAction(event -> {
-			if (!prePath.isBlank()) prePath = "";
-			if (session == null) session = new Session(path);
-			session.setPath(path);
-			session.setVideoVValue(videosPane.getVvalue());
-			session.setFolderVValue(folderPane.getVvalue());
-			if (!videoInfoPath.isBlank()) session.setVideoInfoPath(videoInfoPath);
-			new App().changePage("Main");
-		});
-		buttonOpenFolder.setOnAction(event -> {
-			try {
-				Desktop.getDesktop().open(new File(path));
-			} catch (IOException e1) {}
-		});
-		buttonBack.setOnAction(event -> {
+		buttonMain.setOnAction(event -> new App().changePage("Main"));
+		Utils.hoverButtonAnimation(buttonMain);
+		loadingGif.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/assets/images/loading.gif"))));
+		flowPane.setHgap(10);
+		flowPane.setVgap(10);
+		new Thread(loadStuff()).start();
+		back.setOnMouseClicked(event -> {
 			if (!currentFolders.isEmpty()) {
-				currentFolders.remove(currentFolders.size() - 1);
+				currentFolders.removeLast();
 				updatePath();
-				reinit(controller);
+				reinit();
 			}
 		});
-		vboxVideos.setSpacing(10);
-		vboxFolder.setSpacing(10);
-		if (prePath.isBlank()) {
-			if (session != null) {
-				currentFolders.clear();
-				currentFolders.addAll(session.getFolders());
-				updatePath();
-				reinit(controller);
-				if (!session.getVideoInfoPath().isBlank()) {
-					NormalVideo video = new NormalVideo(new File(session.getVideoInfoPath()));
-					videoInfoPane.setVisible(false);
-					controller.openVideoInfo(video);
-					controller.setOnVideoDelete(video, () -> {
-						reinit(controller);
-					});
+		//		scrollPane.vvalueProperty().addListener((observable, oldValue, newValue) -> {
+		//			if (newValue.doubleValue() == scrollPane.getVmax()) {
+		//				Platform.runLater(this::loadFiles);
+		//			}
+		//		});
+	}
+
+	private final ArrayList<AnchorPane> files = new ArrayList<>();
+
+	private Task<Void> loadStuff() {
+		return new Task<>() {
+
+			@Override
+			protected Void call() {
+				Instant start = Instant.now();
+				files.clear();
+				for (Folder folder : Data.folders) {
+					files.add(Utils.showFileInfo(folder, e -> {
+						currentFolders.add(folder.getName());
+						updatePath();
+						reinit();
+					}));
 				}
-				folderPane.setVvalue(session.getFolderVValue());
-				videosPane.setVvalue(session.getVideoVValue());
-			} else {
-				for (File folder : folders)
-					vboxFolder.getChildren().add(getFolderButton(new Folder(folder), controller));
-				for (NormalVideo video : videos)
-					vboxVideos.getChildren().add(getVideoButton(video, controller));
+				for (VideoFile video : Data.videos) {
+					files.add(Utils.showFileInfo(video, null));
+				}
+				Instant end = Instant.now();
+				Duration duration = Duration.between(start, end);
+				System.out.println("Successfully loaded stuff. (Took " + duration.toSeconds() + "s (" + duration.toMillis() + " ms))");
+				return null;
 			}
-		} else {
-			prePath = prePath.replaceAll(oripath, "");
-			currentFolders.clear();
-			for (String folder : prePath.split("/"))
-				if (!Data.isVideoFile(folder) & !folder.isBlank()) currentFolders.add(folder);
-			updatePath();
-			reinit(controller);
-			NormalVideo video = new NormalVideo(new File(oripath + prePath));
-			videoInfoPane.setVisible(false);
-			controller.openVideoInfo(video);
-			controller.setOnVideoDelete(video, () -> {
-				reinit(controller);
-			});
+
+			@Override
+			protected void succeeded() {
+				super.succeeded();
+				loadingGif.setVisible(false);
+				flowPane.getChildren().addAll(files);
+				//for (int i = 0; i < 21; i++) {
+				//if (files.size() > i) flowPane.getChildren().add(files.get(i));
+				//}
+			}
+		};
+	}
+
+	private Integer currentIndex = 0;
+
+	private void loadFiles() {
+		Integer count = 21;
+		if (currentIndex + 21 >= files.size()) {
+			return;
 		}
+		int nextIndex = currentIndex + 21;
+		for (int i = 0; i < 21; i++) {
+			if (!flowPane.getChildren().isEmpty()) {
+				flowPane.getChildren().removeFirst();
+			}
+		}
+		for (int i = nextIndex; i < nextIndex + 21; i++) {
+			if (i < files.size()) {
+				flowPane.getChildren().add(files.get(i));
+			}
+		}
+		scrollPane.setVvalue(0);
+		currentIndex = nextIndex;
 	}
 
-	private JFXButton getVideoButton(NormalVideo video, VideoInfoController controller) {
-		JFXButton button = new JFXButton(video.getName());
-		button.setFont(new Font("Candara", 15));
-		button.setPrefSize(200, 25);
-		button.setStyle("-fx-background-color: #3D4956; -fx-text-fill: #ffff;");
-		button.setOnAction(event -> {
-			videoInfoPane.setVisible(false);
-			controller.openVideoInfo(video);
-			controller.setOnVideoDelete(video, () -> {
-				reinit(controller);
-			});
-		});
-		button.setOnMouseClicked(event -> {
-			if (event.getButton() == MouseButton.MIDDLE) video.getVideoInfo().openImage();
-		});
-		return button;
-	}
+	//	private AnchorPane showFileInfo(BaseFile file) {
+	//		AnchorPane pane = null;
+	//		FXMLLoader loader = new FXMLLoader(getClass().getResource("/pages/FileInfoPage.fxml"));
+	//		try {
+	//			pane = loader.load();
+	//		} catch (IOException e) {
+	//			e.printStackTrace();
+	//		}
+	//		FileInfoController controller = (FileInfoController) loader.getController();
+	//		controller.setInformations(file);
+	//		if (file instanceof Folder) controller.setCustomImageClick(e -> {
+	//			currentFolders.add(file.getName());
+	//			updatePath();
+	//			reinit();
+	//		});
+	//		return pane;
+	//	}
 
-	private JFXButton getFolderButton(Folder folder, VideoInfoController controller) {
-		JFXButton button = new JFXButton(folder.getName());
-		button.setStyle("-fx-background-color: #3D4956; -fx-text-fill: #ffff;");
-		button.setFont(new Font("Candara", 15));
-		button.setPrefSize(200, 25);
-		button.setOnAction(event -> {
-			currentFolders.add(folder.getName());
-			updatePath();
-			reinit(controller);
-		});
-		return button;
-	}
-
-	private void reinit(VideoInfoController controller) {
-		videos.clear();
+	private void reinit() {
+		loadingGif.setVisible(true);
+		Data.videos.clear();
 		folders.clear();
-		vboxVideos.getChildren().clear();
-		vboxFolder.getChildren().clear();
-		for (File file : new File(path).listFiles()) {
-			if (Data.isVideoFile(file.getName())) {
-				videos.add(new NormalVideo(file));
-				continue;
-			} else if (file.getName().contains(".")) continue;
-			folders.add(file);
-			continue;
+		flowPane.getChildren().clear();
+		for (File file : Objects.requireNonNull(new File(path).listFiles())) {
+			if (file.isDirectory()) {
+				folders.add(new Folder(file));
+			} else if (Data.isVideoFile(file.getName())) {
+				Data.videos.add(new VideoFile(file));
+			}
 		}
-		for (NormalVideo video : videos) vboxVideos.getChildren().add(getVideoButton(video, controller));
-		for (File folder : folders)
-			vboxFolder.getChildren().add(getFolderButton(new Folder(folder), controller));
+		new Thread(loadStuff()).start();
 	}
-
 }

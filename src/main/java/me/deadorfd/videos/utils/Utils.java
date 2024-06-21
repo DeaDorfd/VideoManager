@@ -1,7 +1,17 @@
 package me.deadorfd.videos.utils;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import com.jfoenix.controls.JFXButton;
+import javafx.event.EventHandler;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import me.deadorfd.videos.utils.files.BaseFile;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -10,10 +20,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import java.util.Objects;
 
 /**
  * @Author DeaDorfd
@@ -24,9 +31,44 @@ import javax.swing.JLabel;
  */
 public class Utils {
 
+	public static AnchorPane showFileInfo(BaseFile file, EventHandler<? super MouseEvent> value) {
+		AnchorPane root = new AnchorPane();
+		root.setPrefSize(170, 210);
+		root.setStyle("-fx-background-color: #4d5a69;");
+		ImageView preview = new ImageView(file.getImage());
+		preview.setFitHeight(150.0);
+		preview.setFitWidth(170.0);
+		preview.setPickOnBounds(true);
+		preview.setPreserveRatio(true);
+		Label infos = new Label(file.getName() + "\n" + file.getFileInfo().getCreatedDate());
+		infos.setFont(new Font("Arial", 12.0));
+		infos.setLayoutY(150.0);
+		infos.setPrefHeight(60);
+		infos.setPrefWidth(170);
+		infos.setTextFill(Paint.valueOf("WHITE"));
+		infos.setWrapText(true);
+		preview.hoverProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue) preview.setOpacity(0.7);
+			if (!newValue) preview.setOpacity(1);
+		});
+		preview.setOnMouseClicked(Objects.requireNonNullElseGet(value, () -> event -> {
+			file.open();
+		}));
+		root.getChildren().add(preview);
+		root.getChildren().add(infos);
+		return root;
+	}
+
+	public static void hoverButtonAnimation(JFXButton button) {
+		button.hoverProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue) button.setOpacity(0.7);
+			if (!newValue) button.setOpacity(1);
+		});
+	}
+
 	public static boolean isCreatedInTheLastDays(File file, int time) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-		Date videodate = null;
+		Date videodate;
 		try {
 			videodate = sdf.parse(sdf.format(file.lastModified()));
 		} catch (ParseException e) {

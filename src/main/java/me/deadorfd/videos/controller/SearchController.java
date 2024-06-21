@@ -11,14 +11,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import me.deadorfd.videos.App;
 import me.deadorfd.videos.Video;
 import me.deadorfd.videos.utils.Data;
-import me.deadorfd.videos.utils.video.NormalVideo;
+import me.deadorfd.videos.utils.files.VideoFile;
 
 /**
  * @Author DeaDorfd
@@ -89,12 +88,12 @@ public class SearchController {
 			} else if (name.contains(content) || name.equals(content) || name.equalsIgnoreCase(content)
 					|| name.startsWith(content)) {
 				if (!Data.isVideoFile(name)) continue;
-				vboxVideos.getChildren().add(getVideoButton(new NormalVideo(file), controller));
+				vboxVideos.getChildren().add(getVideoButton(new VideoFile(file), controller));
 			}
 		}
 	}
 
-	private JFXButton getVideoButton(NormalVideo video, VideoInfoController controller) {
+	private JFXButton getVideoButton(VideoFile video, VideoInfoController controller) {
 		JFXButton button = new JFXButton(video.getName());
 		button.setFont(new Font("Candara", 15));
 		button.setPrefSize(350, 35);
@@ -107,9 +106,9 @@ public class SearchController {
 				onSearch(Data.oripath, controller);
 			});
 		});
-		button.setOnMouseClicked(event -> {
-			if (event.getButton() == MouseButton.MIDDLE) video.getVideoInfo().openImage();
-		});
+//		button.setOnMouseClicked(event -> {
+//			if (event.getButton() == MouseButton.MIDDLE) video.getVideoInfo().openImage();
+//		});
 		return button;
 	}
 }

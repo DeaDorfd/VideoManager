@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="170.0" style="-fx-background-color: #4d5a69;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="me.deadorfd.videos.controller.FileInfoController">
+   <children>
+      <ImageView fx:id="preview" fitHeight="150.0" fitWidth="170.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="infos" layoutY="150.0" prefHeight="59.0" prefWidth="170.0" text="Titel&#10;xx.xx.xxxx" textFill="WHITE" wrapText="true">
+         <font>
+            <Font name="Arial" size="12.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

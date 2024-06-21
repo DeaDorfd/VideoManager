@@ -1,10 +1,10 @@
 package me.deadorfd.videos.controller;
 
 import com.jfoenix.controls.JFXButton;
-
 import javafx.fxml.FXML;
 import me.deadorfd.videos.App;
 import me.deadorfd.videos.Video;
+import me.deadorfd.videos.utils.Utils;
 
 /**
  * @Author DeaDorfd
@@ -35,5 +35,12 @@ public class MainController {
 		buttonFavorites.setOnAction(event -> new App().changePage("Favorites"));
 		buttonSearch.setOnAction(event -> new App().changePage("Search"));
 		buttonNewVideos.setOnAction(event -> new App().changePage("NewVideos"));
+
+		Utils.hoverButtonAnimation(buttonVideos);
+		Utils.hoverButtonAnimation(buttonSettings);
+		Utils.hoverButtonAnimation(buttonHistory);
+		Utils.hoverButtonAnimation(buttonFavorites);
+		Utils.hoverButtonAnimation(buttonSearch);
+		Utils.hoverButtonAnimation(buttonNewVideos);
 	}
 }

@@ -1,7 +1,6 @@
 package me.deadorfd.videos.controller;
 
 import com.jfoenix.controls.JFXSlider;
-
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
@@ -16,10 +15,9 @@ import javafx.scene.media.MediaPlayer.Status;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import me.deadorfd.videos.utils.Debug;
 import me.deadorfd.videos.utils.Settings;
+import me.deadorfd.videos.utils.files.VideoFile;
 import me.deadorfd.videos.utils.sql.Setting;
-import me.deadorfd.videos.utils.video.BaseVideo;
 
 /**
  * @Author DeaDorfd
@@ -51,7 +49,7 @@ public class MediaPlayerController {
 
 	private Double sizeHeight, playHeight, skipNextHeight, skipBackHeight, iconVolHeight;
 
-	public static BaseVideo video;
+	public static VideoFile video;
 
 	private String convertToTime(Double millisDouble) {
 		long durationInMillis = millisDouble.longValue();
@@ -72,27 +70,27 @@ public class MediaPlayerController {
 		EventHandler handler = e -> {
 			if (paneVol.isVisible()) paneVol.setVisible(false);
 		};
-		iconVol.setOnMouseClicked(event -> {
-			if (paneVol.isVisible()) {
-				paneVol.setVisible(false);
-			} else
-				paneVol.setVisible(true);
-		});
+		iconVol.setOnMouseClicked(event -> paneVol.setVisible(!paneVol.isVisible()));
 		if (video == null) return;
 		labelTitel.setText(video.getName());
-		Media media = new Media(video.getFile().toURI().toString());
-		player = new MediaPlayer(media);
+		player = new MediaPlayer(new Media(video.getFile().toURI().toString()));
 		mediaView = new MediaView(player);
-		mediaView.setPreserveRatio(true);
 		stackpaneMedia.getChildren().add(mediaView);
-		player.setVolume(Double.valueOf(new Setting(Settings.MEDIAPLAYER_VOLUME).getStatus()));
-		sliderVol.setValue(Double.valueOf(new Setting(Settings.MEDIAPLAYER_VOLUME).getStatus()) * 100.0);
-		labelVol.setText(Double.valueOf(sliderVol.getValue()).intValue() + "");
+		player.setVolume(Double.parseDouble(new Setting(Settings.MEDIAPLAYER_VOLUME).getStatus()));
 		player.setOnReady(() -> {
-			barVideoTime.maxProperty().bind(Bindings.createDoubleBinding(
-					() -> player.getTotalDuration().toSeconds(), player.totalDurationProperty()));
+			barVideoTime.maxProperty()
+					.bind(Bindings.createDoubleBinding(() -> player.getTotalDuration().toSeconds(), player.totalDurationProperty()));
 			labelEndTime.setText(convertToTime(player.getTotalDuration().toMillis()));
 		});
+		InvalidationListener listener = e -> player.seek(Duration.seconds(barVideoTime.getValue()));
+		player.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+			barVideoTime.valueProperty().removeListener(listener);
+			barVideoTime.setValue(newValue.toSeconds());
+			labelCurrentTime.setText(convertToTime(newValue.toMillis()));
+			barVideoTime.valueProperty().addListener(listener);
+		});
+		sliderVol.setValue(Double.parseDouble(new Setting(Settings.MEDIAPLAYER_VOLUME).getStatus()) * 100.0);
+		labelVol.setText(Double.valueOf(sliderVol.getValue()).intValue() + "");
 		sliderVol.valueProperty().addListener(event -> {
 			new Setting(Settings.MEDIAPLAYER_VOLUME).setStatus(sliderVol.getValue() / 100.0 + "");
 			player.setVolume(sliderVol.getValue() / 100.0);
@@ -104,7 +102,6 @@ public class MediaPlayerController {
 				iconMute.setGlyphName("VOLUME_UP");
 				iconVol.setGlyphName("VOLUME_UP");
 				player.setVolume(sliderVol.getValue() / 100.0);
-				Debug.sendMessage(player.getVolume());
 			} else {
 				iconMute.setGlyphName("VOLUME_OFF");
 				iconVol.setGlyphName("VOLUME_OFF");
@@ -118,29 +115,17 @@ public class MediaPlayerController {
 			} else if (player.getStatus() == Status.PLAYING) {
 				iconPlay.setGlyphName("PLAY");
 				player.pause();
+			} else if (player.getStatus() == Status.STOPPED) {
+				iconPlay.setGlyphName("PAUSE");
+				player.seek(Duration.seconds(0));
+				player.play();
 			}
 		});
-		InvalidationListener listener = e -> {
-			player.seek(Duration.seconds(barVideoTime.getValue()));
-		};
-		player.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-			barVideoTime.valueProperty().removeListener(listener);
-			barVideoTime.setValue(newValue.toSeconds());
-			labelCurrentTime.setText(convertToTime(newValue.toMillis()));
-			barVideoTime.valueProperty().addListener(listener);
-		});
-		iconSkipNext.setOnMouseClicked(event -> {
-			player.seek(Duration.seconds(player.getCurrentTime().toSeconds() + 10));
-		});
-		iconSkipBack.setOnMouseClicked(event -> {
-			player.seek(Duration.seconds(player.getCurrentTime().toSeconds() - 10));
-		});
+		iconSkipNext.setOnMouseClicked(event -> player.seek(Duration.seconds(player.getCurrentTime().toSeconds() + 10)));
+		iconSkipBack.setOnMouseClicked(event -> player.seek(Duration.seconds(player.getCurrentTime().toSeconds() - 10)));
 		iconSize.setOnMouseClicked(event -> {
 			Stage stage = (Stage) root.getScene().getWindow();
-			if (!stage.isFullScreen()) {
-				stage.setFullScreen(true);
-			} else
-				stage.setFullScreen(false);
+			stage.setFullScreen(!stage.isFullScreen());
 		});
 		root.hoverProperty().addListener((observable, oldValue, newValue) -> {
 			if (player.getStatus() == Status.PAUSED || player.getStatus() == Status.READY) return;

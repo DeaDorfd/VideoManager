@@ -1,8 +1,5 @@
 package me.deadorfd.videos;
 
-import java.time.Duration;
-import java.time.Instant;
-
 import me.deadorfd.videos.utils.Data;
 import me.deadorfd.videos.utils.FileManager;
 import me.deadorfd.videos.utils.Settings;
@@ -11,6 +8,9 @@ import me.deadorfd.videos.utils.language.LanguageAPI;
 import me.deadorfd.videos.utils.sql.Favorites;
 import me.deadorfd.videos.utils.sql.SQLite;
 import me.deadorfd.videos.utils.sql.Setting;
+
+import java.time.Duration;
+import java.time.Instant;
 
 /**
  * @Author DeaDorfd
@@ -39,12 +39,11 @@ public class Video {
 				String newPath = Utils.getPathIfFileDoesntExists(video.getFile(), Data.oripath);
 				if (newPath != null) {
 					new Favorites(video).setVideoPath(newPath);
-				} else
-					video.removeFromFavorites();
+				} else video.removeFromFavorites();
 			}
 		});
 		Instant end = Instant.now();
-		System.out.println("Successfully started. (Took " + Duration.between(start, end).toSeconds() + "s)");
+		System.out.println("Successfully started. (Took " + Duration.between(start, end).toMillis() + "ms)");
 		App.main(args);
 	}
 

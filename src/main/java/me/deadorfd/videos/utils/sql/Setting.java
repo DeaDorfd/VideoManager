@@ -1,10 +1,10 @@
 package me.deadorfd.videos.utils.sql;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import me.deadorfd.videos.utils.Settings;
 import me.deadorfd.videos.utils.language.Languages;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * @Author DeaDorfd
@@ -15,15 +15,14 @@ import me.deadorfd.videos.utils.language.Languages;
  */
 public class Setting {
 
-	private Settings setting;
+	private final Settings setting;
 
 	public Setting(Settings setting) {
 		this.setting = setting;
 	}
 
 	public void create(String status) {
-		if (!exists()) SQLite.update(
-				"INSERT INTO Settings(Name, Status) VALUES ('" + setting.getName() + "','" + status + "');");
+		if (!exists()) SQLite.update("INSERT INTO Settings(Name, Status) VALUES ('" + setting.getName() + "','" + status + "');");
 	}
 
 	public Boolean exists() {
@@ -46,8 +45,7 @@ public class Setting {
 		}
 		ResultSet rs = SQLite.getResult("Select Status FROM Settings WHERE Name='" + setting.getName() + "'");
 		try {
-			while (rs.next())
-				return rs.getString("Status");
+			if (rs.next()) return rs.getString("Status");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

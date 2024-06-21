@@ -2,7 +2,8 @@ package me.deadorfd.videos.utils;
 
 import java.io.File;
 
-import me.deadorfd.videos.utils.video.NormalVideo;
+import me.deadorfd.videos.utils.files.Folder;
+import me.deadorfd.videos.utils.files.VideoFile;
 import static me.deadorfd.videos.utils.Data.*;
 
 /**
@@ -17,11 +18,11 @@ public class FileManager {
 		videos.clear();
 		folders.clear();
 		for (File file : new File(path).listFiles()) {
-			if (Data.isVideoFile(file.getName())) {
-				videos.add(new NormalVideo(file));
+			if (file.isDirectory()) {
+				folders.add(new Folder(file));
 				continue;
-			} else if (file.isDirectory()) {
-				folders.add(file);
+			} else if (Data.isVideoFile(file.getName())) {
+				videos.add(new VideoFile(file));
 				continue;
 			}
 		}

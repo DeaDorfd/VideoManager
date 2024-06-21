@@ -1,12 +1,13 @@
 package me.deadorfd.videos;
 
-import java.io.IOException;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @Author DeaDorfd
@@ -21,12 +22,19 @@ public class App extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
+		File dump = new File(System.getProperty("java.io.tmpdir") + "/videos/");
+		System.out.println(dump.exists());
+		if (dump.exists()) {
+			File[] files = dump.listFiles();
+			for (File f : files) f.delete();
+			System.out.println(dump.delete());
+		}
 		System.exit(0);
 	}
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		this.stage = stage;
+		App.stage = stage;
 		Parent root = FXMLLoader.load(getClass().getResource("/pages/MainPage.fxml"));
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
